@@ -8,11 +8,10 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" })
 
 export const metadata: Metadata = {
-  title: "WHY2 — Experimental Encryption",
+  title: "WHY2",
   description:
     "A modern, fast, and secure Rust crate designed for privacy-first applications. No S-boxes, just pure ARX-based diffusion.",
   keywords: ["encryption", "rust", "cryptography", "privacy", "ARX", "security"],
-  generator: "v0.app",
   icons: {
     icon: [
       {
