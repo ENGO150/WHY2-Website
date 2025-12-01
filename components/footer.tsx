@@ -14,22 +14,13 @@ export function Footer() {
             </div>
             <div className="font-mono">
               <span className="text-foreground font-semibold">WHY2</span>
-              <span className="text-muted-foreground text-sm ml-2">© {new Date().getFullYear()} Vaclav Smejkal</span>
+              <span className="text-muted-foreground text-sm ml-2">© {new Date().getFullYear()} Václav Šmejkal</span>
             </div>
           </div>
 
           {/* Links */}
           <nav className="flex items-center gap-6">
-            <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200">
-              Terms
-            </a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200">
-              Privacy
-            </a>
-            <a
-              href="#"
-              className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1"
-            >
+            <a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank" className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1">
               <span>GNU GPLv3</span>
             </a>
           </nav>
@@ -39,9 +30,12 @@ export function Footer() {
         <div className="mt-8 pt-8 border-t border-border/30 flex items-center justify-center">
           <p className="font-mono text-xs text-muted-foreground/50">
             <span className="text-primary">{"<"}</span>
-            Built with Rust & Privacy
+            Built with Rust
             <span className="text-primary">{"/>"}</span>
           </p>
+        </div>
+        <div className="flex items-center justify-center">
+            💜
         </div>
       </div>
     </footer>
