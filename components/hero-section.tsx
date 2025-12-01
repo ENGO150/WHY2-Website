@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { Book, GitFork } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -39,19 +40,25 @@ export function HeroSection() {
           <Button
             size="lg"
             className="group relative overflow-hidden bg-primary hover:bg-primary/90 text-primary-foreground font-mono px-8 py-6 text-base shadow-[0_0_30px_rgba(168,85,247,0.3)] hover:shadow-[0_0_40px_rgba(168,85,247,0.5)] transition-all duration-300"
+            asChild
           >
+            <Link href="https://docs.rs/why2/latest/why2" target="_blank" rel="noopener noreferrer">
             <Book className="w-5 h-5 mr-2" />
-            Read the Docs
-            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+              Read the Docs
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+            </Link>
           </Button>
 
           <Button
             size="lg"
             variant="outline"
             className="group font-mono px-8 py-6 text-base border-primary/50 hover:border-primary hover:bg-primary/10 transition-all duration-300 bg-transparent"
+            asChild
           >
-            <GitFork className="w-5 h-5 mr-2" />
-            View on GitLab
+            <Link href="https://git.satan.red/ENGO150/WHY2" target="_blank" rel="noopener noreferrer">
+              <GitFork className="w-5 h-5 mr-2" />
+              View on GitLab
+            </Link>
           </Button>
         </div>
 
