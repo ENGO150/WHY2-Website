@@ -1,6 +1,6 @@
 "use client"
 
-import { Book, GitBranch } from "lucide-react"
+import { Book, GitFork } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export function HeroSection() {
@@ -50,7 +50,7 @@ export function HeroSection() {
             variant="outline"
             className="group font-mono px-8 py-6 text-base border-primary/50 hover:border-primary hover:bg-primary/10 transition-all duration-300 bg-transparent"
           >
-            <GitBranch className="w-5 h-5 mr-2" />
+            <GitFork className="w-5 h-5 mr-2" />
             View on GitLab
           </Button>
         </div>
