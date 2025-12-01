@@ -1,7 +1,7 @@
 import { HeroSection } from "@/components/hero-section"
 import { FeaturesGrid } from "@/components/features-grid"
 import { CodeShowcase } from "@/components/code-showcase"
-import { PhilosophySection } from "@/components/philosophy-section"
+import { ProofOfConcept } from "@/components/proof-of-concept"
 import { DisclaimerSection } from "@/components/disclaimer-section"
 import { Footer } from "@/components/footer"
 
@@ -11,7 +11,7 @@ export default function Home() {
       <HeroSection />
       <FeaturesGrid />
       <CodeShowcase />
-      <PhilosophySection />
+      <ProofOfConcept />
       <DisclaimerSection />
       <Footer />
     </main>

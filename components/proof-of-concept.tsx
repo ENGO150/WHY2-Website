@@ -2,7 +2,7 @@
 
 import { MessageSquare, Lock, Server } from "lucide-react"
 
-export function PhilosophySection() {
+export function ProofOfConcept() {
   return (
     <section className="py-24 px-4 relative overflow-hidden">
       {/* Background decoration */}
@@ -57,7 +57,7 @@ export function PhilosophySection() {
           {/* Right: Text content */}
           <div className="space-y-6">
             <div className="inline-block font-mono text-sm text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-              // Philosophy
+              // Proof Of Concept
             </div>
 
             <h2 className="font-mono text-3xl md:text-4xl font-bold leading-tight">
