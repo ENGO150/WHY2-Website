@@ -38,9 +38,9 @@ export function Footer() {
         {/* Bottom decoration */}
         <div className="mt-8 pt-8 border-t border-border/30 flex items-center justify-center">
           <p className="font-mono text-xs text-muted-foreground/50">
-            <span className="text-primary">{"</"}</span>
+            <span className="text-primary">{"<"}</span>
             Built with Rust & Privacy
-            <span className="text-primary">{">"}</span>
+            <span className="text-primary">{"/>"}</span>
           </p>
         </div>
       </div>

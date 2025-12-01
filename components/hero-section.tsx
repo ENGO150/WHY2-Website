@@ -17,14 +17,14 @@ export function HeroSection() {
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full border border-primary/30 bg-primary/5 text-primary font-mono text-sm animate-fade-in">
           <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          v0.1.0 — Experimental
+          v0.2.9-rex — Drunk Mouse
         </div>
 
         {/* Main headline */}
         <h1 className="font-mono text-4xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight animate-fade-in-up">
           <span className="text-foreground">WHY2:</span>{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary">
-            Experimental Nonlinear Encryption
+            Experimental Encryption
           </span>
         </h1>
 
