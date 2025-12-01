@@ -3,7 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* WHY2 cypherpunk dark theme with magenta/purple accents */
 :root {
   --background: oklch(0.05 0.01 285);
   --foreground: oklch(0.98 0 0);
