@@ -4,17 +4,19 @@ import { useState } from "react"
 import { Copy, Check, Terminal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-const codeExample = `use why2::prelude::*;
+const codeExample = `use why2::core::rex::encrypter;
 
-fn main() {
-    let key = Key::generate();
-    let message = "Privacy is a right.";
-    
-    let encrypted = why2::encrypt(message, &key);
-    println!("Encrypted: {:?}", encrypted);
-    
-    let decrypted = why2::decrypt(&encrypted, &key);
-    assert_eq!(message, decrypted.unwrap());
+fn main()
+{
+    let message = String::from("Privacy is a right.");
+
+    let encrypted = encrypter::encrypt_string::<8,8>(&message, None)
+                        .expect("Encryption failed.");
+
+    for grid in &encrypted.output
+    {
+        println!("Encrypted Grid: {}", grid);
+    }
 }`
 
 export function CodeShowcase() {
@@ -75,54 +77,57 @@ export function CodeShowcase() {
             <div className="p-6 overflow-x-auto">
               <pre className="font-mono text-sm leading-relaxed">
                 <code>
-                  <span className="text-primary">use</span> <span className="text-cyan-400">why2::prelude::*</span>;
+                  <span className="text-primary">use</span>{" "}
+                  <span className="text-foreground">why2::core::rex::</span>
+                  <span className="text-cyan-400">encrypter</span>;
                   {"\n\n"}
                   <span className="text-primary">fn</span> <span className="text-yellow-400">main</span>
-                  <span className="text-foreground">{"()"}</span> <span className="text-foreground">{"{"}</span>
-                  {"\n"}
-                  {"    "}
-                  <span className="text-primary">let</span> <span className="text-foreground">key</span>{" "}
-                  <span className="text-primary">=</span> <span className="text-cyan-400">Key</span>
-                  <span className="text-foreground">::</span>
-                  <span className="text-yellow-400">generate</span>
-                  <span className="text-foreground">();</span>
+                  <span className="text-foreground">{"()"}</span> <span className="text-foreground">{"\n{"}</span>
                   {"\n"}
                   {"    "}
                   <span className="text-primary">let</span> <span className="text-foreground">message</span>{" "}
-                  <span className="text-primary">=</span> <span className="text-green-400">"Privacy is a right."</span>
-                  <span className="text-foreground">;</span>
+                  <span className="text-primary">=</span> <span className="text-cyan-400">String</span>
+                  <span className="text-foreground">::</span>
+                  <span className="text-yellow-400">from</span>(
+                  <span className="text-green-400">"Privacy is a right."</span>
+                  <span className="text-foreground">);</span>
                   {"\n\n"}
                   {"    "}
                   <span className="text-primary">let</span> <span className="text-foreground">encrypted</span>{" "}
-                  <span className="text-primary">=</span> <span className="text-cyan-400">why2</span>
+                  <span className="text-primary">=</span> <span className="text-cyan-400">encrypter</span>
                   <span className="text-foreground">::</span>
-                  <span className="text-yellow-400">encrypt</span>
-                  <span className="text-foreground">(message, </span>
+                  <span className="text-yellow-400">encrypt_string</span>
+                  <span className="text-foreground">::{"<"}</span>
+                  <span className="text-primary">8</span>,<span className="text-primary">8</span>
+                  <span className="text-foreground">{">"}(</span>
                   <span className="text-primary">&</span>
-                  <span className="text-foreground">key);</span>
+                  <span className="text-foreground">message, </span>
+                  <span className="text-cyan-400">None</span>
+                  <span className="text-foreground">)</span>
                   {"\n"}
-                  {"    "}
-                  <span className="text-yellow-400">println!</span>
+                  {"                        "}
+                  <span className="text-foreground">.</span>
+                  <span className="text-yellow-400">expect</span>
                   <span className="text-foreground">(</span>
-                  <span className="text-green-400">{'"Encrypted: {:?}"'}</span>
-                  <span className="text-foreground">, encrypted);</span>
+                  <span className="text-green-400">"Encryption failed."</span>
+                  <span className="text-foreground">);</span>
                   {"\n\n"}
                   {"    "}
-                  <span className="text-primary">let</span> <span className="text-foreground">decrypted</span>{" "}
-                  <span className="text-primary">=</span> <span className="text-cyan-400">why2</span>
-                  <span className="text-foreground">::</span>
-                  <span className="text-yellow-400">decrypt</span>
-                  <span className="text-foreground">(</span>
+                  <span className="text-primary">for</span> grid <span className="text-primary">in</span>{" "}
                   <span className="text-primary">&</span>
-                  <span className="text-foreground">encrypted, </span>
-                  <span className="text-primary">&</span>
-                  <span className="text-foreground">key);</span>
+                  <span className="text-foreground">encrypted.output</span>
                   {"\n"}
                   {"    "}
-                  <span className="text-yellow-400">assert_eq!</span>
-                  <span className="text-foreground">(message, decrypted.</span>
-                  <span className="text-yellow-400">unwrap</span>
-                  <span className="text-foreground">());</span>
+                  <span className="text-foreground">{"{"}</span>
+                  {"\n"}
+                  {"        "}
+                  <span className="text-yellow-400">println!</span>
+                  <span className="text-foreground">(</span>
+                  <span className="text-green-400">{'"Encrypted Grid: {}"'}</span>
+                  <span className="text-foreground">, grid);</span>
+                  {"\n"}
+                  {"    "}
+                  <span className="text-foreground">{"}"}</span>
                   {"\n"}
                   <span className="text-foreground">{"}"}</span>
                 </code>
