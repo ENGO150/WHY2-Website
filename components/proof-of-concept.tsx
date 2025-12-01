@@ -74,8 +74,9 @@ export function ProofOfConcept() {
 
             <blockquote className="relative pl-6 border-l-2 border-primary/50 py-2">
               <p className="text-lg italic text-foreground/90">
-                "Designed for those who demand absolute control over their data. No backdoors. No subscriptions."
+                "If privacy is outlawed, only outlaws will have privacy."
               </p>
+              <p className="text-lg text-muted-foreground italic leading-relaxed">- Phil Zimmermann</p>
             </blockquote>
 
             <div className="flex flex-wrap gap-3 pt-4">
