@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
-  basePath: '/WHY2-Website',
+  //basePath: '/WHY2-Website',
   typescript: {
     ignoreBuildErrors: true,
   },
