@@ -64,7 +64,7 @@ export function HeroSection() {
 
         {/* Terminal-style decoration */}
         <div className="mt-16 font-mono text-sm text-muted-foreground/50 animate-fade-in delay-500">
-          <span className="text-primary">$</span> cargo add why2
+          <span className="text-primary">$</span> cargo install why2
         </div>
       </div>
 
