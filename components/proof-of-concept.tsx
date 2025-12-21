@@ -80,7 +80,7 @@ export function ProofOfConcept() {
             </blockquote>
 
             <div className="flex flex-wrap gap-3 pt-4">
-              {["Self-Hosted", "End-to-End", "Zero Knowledge"].map((tag) => (
+              {["Self-Hosted", "Minimalist", "Zero Knowledge", "Terminal-Based", "No Telemetry", "Open Source"].map((tag) => (
                 <span
                   key={tag}
                   className="font-mono text-xs px-3 py-1.5 rounded-full bg-card border border-border/50 text-muted-foreground"
