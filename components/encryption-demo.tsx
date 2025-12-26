@@ -304,7 +304,7 @@ export function EncryptionDemo() {
                </p>
 
                {currentStepData.type === "FINAL_XOR" && (
-                   <div className="mt-4 p-4 bg-secondary/50 rounded-lg border border-border text-sm font-mono text-muted-foreground flex items-center gap-3">
+                   <div className="mt-4 p-4 bg-primary/5 rounded-lg border border-primary/20 text-sm font-mono text-muted-foreground flex items-center gap-3">
                        <ArrowDownUp className="w-4 h-4 text-primary" />
                        <span>Combining Keystream with "DEADBEEF CAFEBABE..."</span>
                    </div>
@@ -335,7 +335,7 @@ export function EncryptionDemo() {
               <button
                 onClick={handlePrev}
                 disabled={stepIndex === 0}
-                className="flex-1 h-14 rounded-xl border border-border bg-card hover:bg-accent/5 disabled:opacity-50 disabled:cursor-not-allowed font-mono font-bold flex items-center justify-center gap-2 transition-all"
+                className="flex-1 h-14 rounded-xl border border-border bg-card hover:bg-primary/5 hover:border-primary/50 disabled:opacity-50 disabled:cursor-not-allowed font-mono font-bold flex items-center justify-center gap-2 transition-all duration-300"
               >
                 <ChevronLeft className="w-5 h-5" /> PREV
               </button>
@@ -343,16 +343,20 @@ export function EncryptionDemo() {
               {stepIndex === STEPS.length - 1 ? (
                 <button
                   onClick={handleReset}
-                  className="flex-[2] h-14 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-mono font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20"
+                  className="group relative overflow-hidden flex-[2] h-14 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-mono font-bold flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(168,85,247,0.3)] hover:shadow-[0_0_40px_rgba(168,85,247,0.5)] transition-all duration-300"
                 >
-                  <RotateCcw className="w-5 h-5" /> RESTART
+                  <RotateCcw className="w-5 h-5" />
+                  RESTART
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                 </button>
               ) : (
                 <button
                   onClick={handleNext}
-                  className="flex-[2] h-14 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-mono font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20"
+                  className="group relative overflow-hidden flex-[2] h-14 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-mono font-bold flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(168,85,247,0.3)] hover:shadow-[0_0_40px_rgba(168,85,247,0.5)] transition-all duration-300"
                 >
-                  NEXT STEP <ChevronRight className="w-5 h-5" />
+                  NEXT STEP
+                  <ChevronRight className="w-5 h-5" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                 </button>
               )}
             </div>
