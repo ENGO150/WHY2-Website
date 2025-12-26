@@ -159,6 +159,12 @@ export function EncryptionDemo() {
 
   const currentStepData = STEPS[stepIndex]
 
+  const getStepLabel = () => {
+      if (stepIndex === 0) return "WAITING TO START";
+      if (stepIndex === STEPS.length - 1) return "ROUND FINISHED";
+      return `OPERATION ${stepIndex} OF 6`;
+  }
+
   return (
     <section className="py-24 px-4 bg-background/50 border-y border-border/50">
       <div className="container mx-auto max-w-5xl">
@@ -170,15 +176,13 @@ export function EncryptionDemo() {
             Interactive visualization of the WHY2 encryption pipeline.
           </p>
 
-          {/* DISCLAIMER / NOTE */}
           <div className="inline-flex items-start gap-3 bg-primary/5 border border-primary/20 rounded-lg p-4 text-left max-w-2xl mx-auto">
              <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-
-              <p className="text-sm text-muted-foreground font-mono">
+             <p className="text-sm text-muted-foreground font-mono">
                 <strong className="text-primary">Educational Visualization:</strong> This simplified demo uses a 4x4 byte matrix.
                 The actual REX protocol is far more complex, employing <strong className="text-foreground">64-bit arithmetic, deterministic grid shuffling, secure key scheduling</strong>, and 14 cryptographic rounds.
                 The visual effects shown here illustrate the flow of data but do not represent the full mathematical precision of the cipher.
-              </p>
+             </p>
           </div>
         </div>
 
@@ -243,11 +247,16 @@ export function EncryptionDemo() {
 
             <div className="space-y-4">
                <div className="flex items-center gap-3">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-mono font-bold text-primary border border-primary/20">
-                    {stepIndex}
+                  <span className={cn(
+                      "flex h-6 px-2 items-center justify-center rounded-full text-xs font-mono font-bold border",
+                      stepIndex === STEPS.length - 1
+                        ? "bg-green-500/10 text-green-500 border-green-500/20"
+                        : "bg-primary/10 text-primary border-primary/20"
+                  )}>
+                    {stepIndex === 0 ? "START" : stepIndex === STEPS.length - 1 ? "DONE" : stepIndex}
                   </span>
                   <span className="font-mono text-sm text-muted-foreground tracking-wider uppercase">
-                    Operation {stepIndex} of {STEPS.length - 1}
+                    {getStepLabel()}
                   </span>
                </div>
 
