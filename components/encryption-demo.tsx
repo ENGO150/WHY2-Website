@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { RotateCcw, ChevronRight, ChevronLeft, Cpu, ShieldCheck, Info } from "lucide-react"
+import { RotateCcw, ChevronRight, ChevronLeft, Cpu, ShieldCheck, Info, ArrowDownUp } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-type StepType = "IDLE" | "INIT" | "KEY_INJECTION" | "SUBCELL" | "SHIFT_ROWS" | "MIX_COLUMNS" | "MIX_DIAGONALS" | "MIX_MATRIX" | "DONE"
+type StepType = "IDLE" | "INIT" | "KEY_INJECTION" | "SUBCELL" | "SHIFT_ROWS" | "MIX_COLUMNS" | "MIX_DIAGONALS" | "MIX_MATRIX" | "KEYSTREAM_READY" | "FINAL_XOR"
 
 interface EncryptionStep {
   type: StepType
@@ -17,50 +17,56 @@ const STEPS: EncryptionStep[] = [
   {
     type: "INIT",
     label: "INITIALIZATION",
-    description: "Input buffer loaded with plaintext: DEADBEEF CAFEBABE",
+    description: "Loading the unique Block Counter (Nonce).",
     isModified: () => false
   },
   {
     type: "KEY_INJECTION",
     label: "KEY INJECTION",
-    description: "XOR (Grid ^ RoundKey). The plaintext is whitened with key material.",
+    description: "XOR (State ^ RoundKey). The state is whitened with the current round key.",
     isModified: () => true
   },
   {
     type: "SUBCELL",
     label: "SUBCELL (ARX)",
-    description: "Nonlinear Layer. 32 rounds of Add-Rotate-XOR per cell.",
+    description: "Nonlinear Layer. 32 rounds of Add-Rotate-XOR per cell to destroy linearity.",
     isModified: () => true
   },
   {
     type: "SHIFT_ROWS",
     label: "SHIFT ROWS",
-    description: "Permutation. All rows are rotated left by key-dependent offsets.",
+    description: "Permutation. All rows are rotated left by key-dependent offsets to spread bits horizontally.",
     isModified: () => true
   },
   {
     type: "MIX_COLUMNS",
     label: "MIX COLUMNS",
-    description: "Linear Diffusion. Vertical mixing across columns.",
+    description: "Linear Diffusion. Each column is XORed with its neighbor to spread bits vertically.",
     isModified: () => true
   },
   {
     type: "MIX_DIAGONALS",
     label: "MIX DIAGONALS",
-    description: "Diagonal Propagation. Cells XORed with diagonal neighbors (Edges are read-only).",
+    description: "Diagonal Propagation. Cells mix with diagonal neighbors. Bottom row and right column are read-only sources.",
     isModified: (r, c) => r < 3 && c < 3
   },
   {
     type: "MIX_MATRIX",
     label: "MIX MATRIX",
-    description: "Affine Transform. Matrix multiplication with added noise.",
+    description: "Affine Transform. Matrix multiplication with added noise (Lower & Upper triangular passes).",
     isModified: () => true
   },
   {
-    type: "DONE",
-    label: "ROUND COMPLETE",
-    description: "Encrypted state ready for the next round.",
+    type: "KEYSTREAM_READY",
+    label: "KEYSTREAM GENERATED",
+    description: "The rounds are complete. This pseudorandom block is the 'Keystream'.",
     isModified: () => false
+  },
+  {
+    type: "FINAL_XOR",
+    label: "XOR WITH PLAINTEXT",
+    description: "The Keystream is XORed with your data (DEADBEEF...) to produce the final Ciphertext.",
+    isModified: () => true
   }
 ]
 
@@ -76,7 +82,14 @@ const transformValue = (val: string, diff: number): string => {
     return res.toString(16).toUpperCase().padStart(2, '0');
 }
 
-const INITIAL_GRID = [
+const COUNTER_GRID = [
+  ["00", "00", "00", "01"],
+  ["A1", "B2", "C3", "D4"],
+  ["10", "20", "30", "40"],
+  ["99", "88", "77", "66"]
+]
+
+const USER_PLAINTEXT = [
   ["D", "E", "A", "D"],
   ["B", "E", "E", "F"],
   ["C", "A", "F", "E"],
@@ -84,7 +97,7 @@ const INITIAL_GRID = [
 ]
 
 export function EncryptionDemo() {
-  const [history, setHistory] = useState<string[][][]>([INITIAL_GRID])
+  const [history, setHistory] = useState<string[][][]>([COUNTER_GRID])
   const [stepIndex, setStepIndex] = useState(0)
 
   const currentGrid = history[stepIndex]
@@ -93,14 +106,37 @@ export function EncryptionDemo() {
     const newGrid = inputGrid.map(row => [...row])
 
     switch (currentStep) {
-      case "INIT": return INITIAL_GRID
+      case "INIT": return COUNTER_GRID
 
       case "KEY_INJECTION":
+        for (let r = 0; r < 4; r++) {
+            for (let c = 0; c < 4; c++) {
+                newGrid[r][c] = transformValue(newGrid[r][c], (seed * 11) + r + c)
+            }
+        }
+        break;
+
       case "SUBCELL":
-      case "MIX_MATRIX":
         for (let r = 0; r < 4; r++) {
           for (let c = 0; c < 4; c++) {
-             newGrid[r][c] = transformValue(newGrid[r][c], r + c + seed + 10)
+             newGrid[r][c] = transformValue(newGrid[r][c], getValue(newGrid[r][c]) + 7)
+          }
+        }
+        break
+
+      case "SHIFT_ROWS":
+        newGrid[0] = [...inputGrid[0].slice(1), ...inputGrid[0].slice(0, 1)]
+        newGrid[1] = [...inputGrid[1].slice(2), ...inputGrid[1].slice(0, 2)]
+        newGrid[2] = [...inputGrid[2].slice(3), ...inputGrid[2].slice(0, 3)]
+        newGrid[3] = [...inputGrid[3].slice(1), ...inputGrid[3].slice(0, 1)]
+        break
+
+      case "MIX_COLUMNS":
+        for (let c = 0; c < 4; c++) {
+          const nextCol = (c + 1) % 4;
+          for (let r = 0; r < 4; r++) {
+             const neighborVal = getValue(inputGrid[r][nextCol]);
+             newGrid[r][c] = transformValue(newGrid[r][c], neighborVal)
           }
         }
         break
@@ -108,25 +144,29 @@ export function EncryptionDemo() {
       case "MIX_DIAGONALS":
          for (let r = 0; r < 3; r++) {
             for (let c = 0; c < 3; c++) {
-                newGrid[r][c] = transformValue(newGrid[r][c], 42)
+                const neighborVal = getValue(inputGrid[r + 1][c + 1]);
+                newGrid[r][c] = transformValue(newGrid[r][c], neighborVal)
             }
          }
          break;
 
-      case "SHIFT_ROWS":
-        newGrid[0] = [...inputGrid[0].slice(1), ...inputGrid[0].slice(0, 1)] // Rot 1
-        newGrid[1] = [...inputGrid[1].slice(2), ...inputGrid[1].slice(0, 2)] // Rot 2
-        newGrid[2] = [...inputGrid[2].slice(3), ...inputGrid[2].slice(0, 3)] // Rot 3
-        newGrid[3] = [...inputGrid[3].slice(1), ...inputGrid[3].slice(0, 1)] // Rot 1
-        break
-
-      case "MIX_COLUMNS":
-        for (let c = 0; c < 4; c++) {
-          for (let r = 0; r < 4; r++) {
-             newGrid[r][c] = transformValue(newGrid[r][c], 15)
-          }
+      case "MIX_MATRIX":
+        for (let r = 0; r < 4; r++) {
+             for (let c = 0; c < 4; c++) {
+                 const noise = r + 10;
+                 newGrid[r][c] = transformValue(newGrid[r][c], noise)
+             }
         }
         break
+
+      case "FINAL_XOR":
+        for (let r = 0; r < 4; r++) {
+            for (let c = 0; c < 4; c++) {
+                const plaintextVal = getValue(USER_PLAINTEXT[r][c]);
+                newGrid[r][c] = transformValue(newGrid[r][c], plaintextVal);
+            }
+        }
+        break;
     }
     return newGrid
   }, [])
@@ -154,15 +194,15 @@ export function EncryptionDemo() {
 
   const handleReset = () => {
     setStepIndex(0)
-    setHistory([INITIAL_GRID])
+    setHistory([COUNTER_GRID])
   }
 
   const currentStepData = STEPS[stepIndex]
 
   const getStepLabel = () => {
-      if (stepIndex === 0) return "WAITING TO START";
-      if (stepIndex === STEPS.length - 1) return "ROUND FINISHED";
-      return `OPERATION ${stepIndex} OF 6`;
+      if (stepIndex === 0) return "READY";
+      if (stepIndex === STEPS.length - 1) return "ENCRYPTION COMPLETE";
+      return `STEP ${stepIndex} OF ${STEPS.length - 1}`;
   }
 
   return (
@@ -188,7 +228,6 @@ export function EncryptionDemo() {
 
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
-          {/* --- GRID VISUALIZATION --- */}
           <div className="relative group">
             <div className="absolute -inset-4 rounded-3xl bg-primary/5 blur-2xl opacity-50 transition-opacity duration-500" />
 
@@ -197,7 +236,10 @@ export function EncryptionDemo() {
               <div className="flex justify-between items-center mb-6 pb-4 border-b border-border/30">
                  <div className="font-mono text-xs text-muted-foreground flex items-center gap-2">
                     <Cpu className="w-4 h-4 text-primary" />
-                    <span>MEM_BLOCK_0x8F</span>
+                    <span>
+                        {stepIndex === STEPS.length - 1 ? "CIPHERTEXT_OUT" :
+                         stepIndex === 0 ? "COUNTER_BLOCK_IN" : "KEYSTREAM_STATE"}
+                    </span>
                  </div>
                  {stepIndex === STEPS.length - 1 ? (
                     <div className="flex items-center gap-1 text-xs font-mono text-green-500 font-bold">
@@ -214,23 +256,17 @@ export function EncryptionDemo() {
                 {currentGrid.map((row, rIndex) => (
                   row.map((cell, cIndex) => {
                     const isModified = currentStepData.isModified(rIndex, cIndex) && stepIndex > 0
+                    const isFinal = stepIndex === STEPS.length - 1;
 
                     return (
                       <div
                         key={`${rIndex}-${cIndex}`}
                         className={cn(
                           "aspect-square flex items-center justify-center rounded-lg border font-mono text-xl transition-all duration-300",
-                          // Default
                           "bg-background/50 border-border/50 text-muted-foreground",
-
-                          // Modified state
-                          isModified && "bg-primary/10 border-primary text-primary shadow-[0_0_15px_rgba(168,85,247,0.2)] scale-105 z-10",
-
-                          // Final state
-                          currentStepData.type === "DONE" && "border-green-500/30 text-green-500 bg-green-500/5",
-
-                          // Input state (Characters)
-                          stepIndex === 0 && "text-foreground font-bold"
+                          isModified && !isFinal && "bg-primary/10 border-primary text-primary shadow-[0_0_15px_rgba(168,85,247,0.2)] scale-105 z-10",
+                          isFinal && "border-green-500/30 text-green-500 bg-green-500/5 font-bold",
+                          stepIndex === 0 && "text-foreground font-medium"
                         )}
                       >
                          {cell}
@@ -242,7 +278,6 @@ export function EncryptionDemo() {
             </div>
           </div>
 
-          {/* --- CONTROL PANEL --- */}
           <div className="flex flex-col justify-center space-y-8 min-h-[400px]">
 
             <div className="space-y-4">
@@ -267,6 +302,13 @@ export function EncryptionDemo() {
                <p className="text-xl text-muted-foreground leading-relaxed border-l-2 border-primary/20 pl-6 py-2">
                  {currentStepData.description}
                </p>
+
+               {currentStepData.type === "FINAL_XOR" && (
+                   <div className="mt-4 p-4 bg-secondary/50 rounded-lg border border-border text-sm font-mono text-muted-foreground flex items-center gap-3">
+                       <ArrowDownUp className="w-4 h-4 text-primary" />
+                       <span>Combining Keystream with "DEADBEEF CAFEBABE..."</span>
+                   </div>
+               )}
             </div>
 
             <div className="space-y-2 pt-4">
@@ -303,7 +345,7 @@ export function EncryptionDemo() {
                   onClick={handleReset}
                   className="flex-[2] h-14 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-mono font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20"
                 >
-                  <RotateCcw className="w-5 h-5" /> RESTART DEMO
+                  <RotateCcw className="w-5 h-5" /> RESTART
                 </button>
               ) : (
                 <button
