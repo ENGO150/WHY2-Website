@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Copy, Check, Terminal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-const codeExample = `use why2::rex::encrypter;
+const codeExample = `use why2::encrypter;
 
 fn main()
 {
@@ -78,7 +78,7 @@ export function CodeShowcase() {
               <pre className="font-mono text-sm leading-relaxed">
                 <code>
                   <span className="text-primary">use</span>{" "}
-                  <span className="text-foreground">why2::rex::</span>
+                  <span className="text-foreground">why2::</span>
                   <span className="text-cyan-400">encrypter</span>;
                   {"\n\n"}
                   <span className="text-primary">fn</span> <span className="text-yellow-400">main</span>
