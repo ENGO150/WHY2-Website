@@ -77,59 +77,68 @@ export function CodeShowcase() {
             <div className="p-6 overflow-x-auto">
               <pre className="font-mono text-sm leading-relaxed">
                 <code>
-                  <span className="text-primary">use</span>{" "}
-                  <span className="text-foreground">why2::</span>
-                  <span className="text-cyan-400">encrypter</span>;
+                  {/* USE statement */}
+                  <span className="text-indigo-400">use</span>{" "}
+                  <span className="text-muted-foreground">why2::</span>
+                  <span className="text-violet-300">encrypter</span>;
                   {"\n\n"}
-                  <span className="text-primary">fn</span> <span className="text-yellow-400">main</span>
-                  <span className="text-foreground">{"()"}</span> <span className="text-foreground">{"\n{"}</span>
+
+                  {/* FN MAIN */}
+                  <span className="text-indigo-400">fn</span> <span className="text-purple-300">main</span>
+                  <span className="text-muted-foreground">{"()"}</span> <span className="text-muted-foreground">{"\n{"}</span>
                   {"\n"}
                   {"    "}
-                  <span className="text-primary">let</span> <span className="text-foreground">message</span>{" "}
-                  <span className="text-primary">=</span> <span className="text-cyan-400">String</span>
-                  <span className="text-foreground">::</span>
-                  <span className="text-yellow-400">from</span>(
-                  <span className="text-green-400">"Privacy is a right."</span>
-                  <span className="text-foreground">);</span>
+
+                  {/* LET MESSAGE */}
+                  <span className="text-indigo-400">let</span> <span className="text-foreground">message</span>{" "}
+                  <span className="text-indigo-400">=</span> <span className="text-violet-300">String</span>
+                  <span className="text-muted-foreground">::</span>
+                  <span className="text-purple-300">from</span>(
+                  <span className="text-fuchsia-500">"Privacy is a right."</span>
+                  <span className="text-muted-foreground">);</span>
                   {"\n\n"}
                   {"    "}
-                  <span className="text-primary">let</span> <span className="text-foreground">encrypted</span>{" "}
-                  <span className="text-primary">=</span> <span className="text-cyan-400">encrypter</span>
-                  <span className="text-foreground">::</span>
-                  <span className="text-yellow-400">encrypt_string</span>
-                  <span className="text-foreground">::{"<"}</span>
-                  <span className="text-primary">8</span>,<span className="text-primary">8</span>
-                  <span className="text-foreground">{">"}(</span>
-                  <span className="text-primary">&</span>
+
+                  {/* LET ENCRYPTED */}
+                  <span className="text-indigo-400">let</span> <span className="text-foreground">encrypted</span>{" "}
+                  <span className="text-indigo-400">=</span> <span className="text-violet-300">encrypter</span>
+                  <span className="text-muted-foreground">::</span>
+                  <span className="text-purple-300">encrypt_string</span>
+                  <span className="text-muted-foreground">::{"<"}</span>
+                  <span className="text-pink-400">8</span>,<span className="text-pink-400">8</span>
+                  <span className="text-muted-foreground">{">"}(</span>
+                  <span className="text-indigo-400">&</span>
                   <span className="text-foreground">message, </span>
-                  <span className="text-cyan-400">None</span>
-                  <span className="text-foreground">)</span>
+                  <span className="text-violet-300">None</span>
+                  <span className="text-muted-foreground">)</span>
                   {"\n"}
                   {"                        "}
-                  <span className="text-foreground">.</span>
-                  <span className="text-yellow-400">expect</span>
-                  <span className="text-foreground">(</span>
-                  <span className="text-green-400">"Encryption failed."</span>
-                  <span className="text-foreground">);</span>
+                  <span className="text-muted-foreground">.</span>
+                  <span className="text-purple-300">expect</span>
+                  <span className="text-muted-foreground">(</span>
+                  <span className="text-fuchsia-500">"Encryption failed."</span>
+                  <span className="text-muted-foreground">);</span>
                   {"\n\n"}
                   {"    "}
-                  <span className="text-primary">for</span> grid <span className="text-primary">in</span>{" "}
-                  <span className="text-primary">&</span>
+
+                  {/* FOR LOOP */}
+                  <span className="text-indigo-400">for</span> grid <span className="text-indigo-400">in</span>{" "}
+                  <span className="text-indigo-400">&</span>
                   <span className="text-foreground">encrypted.output</span>
                   {"\n"}
                   {"    "}
-                  <span className="text-foreground">{"{"}</span>
+                  <span className="text-muted-foreground">{"{"}</span>
                   {"\n"}
                   {"        "}
-                  <span className="text-yellow-400">println!</span>
-                  <span className="text-foreground">(</span>
-                  <span className="text-green-400">{'"Encrypted Grid: {}"'}</span>
-                  <span className="text-foreground">, grid);</span>
+                  <span className="text-purple-300">println!</span>
+                  <span className="text-muted-foreground">(</span>
+                  <span className="text-fuchsia-500">{'"Encrypted Grid: {}"'}</span>
+                  <span className="text-muted-foreground">, grid);</span>
                   {"\n"}
                   {"    "}
-                  <span className="text-foreground">{"}"}</span>
+                  <span className="text-muted-foreground">{"}"}</span>
                   {"\n"}
-                  <span className="text-foreground">{"}"}</span>
+                  <span className="text-muted-foreground">{"}"}</span>
                 </code>
               </pre>
             </div>
