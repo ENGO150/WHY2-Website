@@ -18,7 +18,7 @@ export function HeroSection() {
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full border border-primary/30 bg-primary/5 text-primary font-mono text-sm animate-fade-in">
           <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          v1.3.4 — "Rustputin"
+          v1.4.0 — "Muddy Cat"
         </div>
 
         {/* Main headline */}
