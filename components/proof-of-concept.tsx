@@ -68,8 +68,9 @@ export function ProofOfConcept() {
             </h2>
 
             <p className="text-lg text-muted-foreground leading-relaxed">
-              WHY2 isn't just a library — it's the backbone of a secure messaging platform designed for individuals and
-              small groups who value their privacy above all else.
+              WHY2 isn't just a library — it's the backbone of a secure{" "}
+              <span className="text-primary font-mono">text</span> and <span className="text-primary font-mono">voice</span>{" "}
+              messaging platform designed for individuals and small groups who value their privacy above all else.
             </p>
 
             <blockquote className="relative pl-6 border-l-2 border-primary/50 py-2">
@@ -80,7 +81,7 @@ export function ProofOfConcept() {
             </blockquote>
 
             <div className="flex flex-wrap gap-3 pt-4">
-              {["Self-Hosted", "Minimalist", "Voice Chat", "Terminal-Based", "No Telemetry", "Open Source"].map((tag) => (
+              {["Self-Hosted", "Minimalist", "Voice Chat Support", "Terminal-Based", "No Telemetry", "Open Source"].map((tag) => (
                 <span
                   key={tag}
                   className="font-mono text-xs px-3 py-1.5 rounded-full bg-card border border-border/50 text-muted-foreground"
