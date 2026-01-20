@@ -22,9 +22,9 @@ export function HeroSection() {
         </div>
 
         {/* Main headline */}
-        <h1 className="font-mono text-4xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight animate-fade-in-up">
+        <h1 className="font-mono text-4xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight animate-fade-in-up text-center">
           <span className="text-foreground">WHY2:</span>{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary box-decoration-clone pb-2">
             Experimental Encryption
           </span>
         </h1>
