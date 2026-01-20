@@ -18,7 +18,7 @@ export function HeroSection() {
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full border border-primary/30 bg-primary/5 text-primary font-mono text-sm animate-fade-in">
           <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          v1.4.2 — "Muddy Cat"
+          v1.4.4 — "Muddy Cat"
         </div>
 
         {/* Main headline */}
@@ -64,7 +64,7 @@ export function HeroSection() {
 
         {/* Terminal-style decoration */}
         <div className="mt-16 font-mono text-sm text-muted-foreground/50 animate-fade-in delay-500">
-          <span className="text-primary">$</span> cargo install why2 --features client
+          <span className="text-primary">$</span> cargo install why2-chat
         </div>
       </div>
 
