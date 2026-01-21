@@ -4,7 +4,11 @@ import Link from "next/link"
 import { Book, GitFork } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-export function HeroSection() {
+interface HeroSectionProps {
+  latestVersion?: string;
+}
+
+export function HeroSection({ latestVersion = "1.8.9" }: HeroSectionProps) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Animated background grid */}
@@ -18,7 +22,7 @@ export function HeroSection() {
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full border border-primary/30 bg-primary/5 text-primary font-mono text-sm animate-fade-in">
           <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          v1.4.5 — "Muddy Cat"
+          v{latestVersion} — "Muddy Cat"
         </div>
 
         {/* Main headline */}
