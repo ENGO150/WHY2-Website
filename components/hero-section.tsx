@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useState, useEffect } from "react"
 import { Book, GitFork } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -8,7 +9,25 @@ interface HeroSectionProps {
   latestVersion?: string;
 }
 
-export function HeroSection({ latestVersion = "1.8.9" }: HeroSectionProps) {
+export function HeroSection() {
+  const [latestVersion, setLatestVersion] = useState<string>("1.8.9")
+
+  useEffect(() => {
+    const fetchVersion = async () => {
+      try {
+        const res = await fetch("https://crates.io/api/v1/crates/why2");
+        if (res.ok) {
+          const data = await res.json();
+          setLatestVersion(data.crate.default_version);
+        }
+      } catch (error) {
+        console.error("Failed to fetch latest version:", error);
+      }
+    };
+
+    fetchVersion();
+  }, []);
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Animated background grid */}
