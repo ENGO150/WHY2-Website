@@ -4,7 +4,8 @@ import { useState, useCallback } from "react"
 import { RotateCcw, ChevronRight, ChevronLeft, Cpu, ShieldCheck, Info, ArrowDownUp } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-type StepType = "IDLE" | "INIT" | "KEY_INJECTION" | "SUBCELL" | "SHIFT_ROWS" | "MIX_COLUMNS" | "MIX_DIAGONALS" | "MIX_MATRIX" | "KEYSTREAM_READY" | "FINAL_XOR"
+// Defined based on core/src/crypto.rs pipeline: Init -> Whitening -> Loop(Xor -> Sub -> Shift -> Mix)
+type StepType = "IDLE" | "INIT" | "WHITENING" | "ROUND_KEY" | "SUBCELL" | "SHIFT_ROWS" | "MIX_COLUMNS" | "KEYSTREAM_READY" | "FINAL_XOR"
 
 interface EncryptionStep {
   type: StepType
@@ -17,55 +18,49 @@ const STEPS: EncryptionStep[] = [
   {
     type: "INIT",
     label: "INITIALIZATION",
-    description: "Loading the unique Block Counter (Nonce).",
+    description: "Loading the unique Block Counter (Nonce). Each block gets a unique counter value.",
     isModified: () => false
   },
   {
-    type: "KEY_INJECTION",
-    label: "KEY INJECTION",
-    description: "XOR (State ^ RoundKey). The state is whitened with the current round key.",
+    type: "WHITENING",
+    label: "INITIAL WHITENING",
+    description: "XOR (State ^ RoundKey[0]). The state is whitened before entering the main loop.",
+    isModified: () => true
+  },
+  {
+    type: "ROUND_KEY",
+    label: "ROUND KEY ADDITION",
+    description: "XOR (State ^ RoundKey[r]). Injecting fresh key material at the start of the round.",
     isModified: () => true
   },
   {
     type: "SUBCELL",
     label: "SUBCELL (ARX)",
-    description: "Nonlinear Layer. 32 rounds of Add-Rotate-XOR per cell to destroy linearity.",
+    description: "Nonlinear Layer. 32 rounds of Add-Rotate-XOR per cell using Golden Ratio constants to destroy linearity.",
     isModified: () => true
   },
   {
     type: "SHIFT_ROWS",
     label: "SHIFT ROWS",
-    description: "Permutation. All rows are rotated left by key-dependent offsets to spread bits horizontally.",
+    description: "Permutation. Rows are rotated left by variable offsets derived from the Round Key (key-dependent).",
     isModified: () => true
   },
   {
     type: "MIX_COLUMNS",
     label: "MIX COLUMNS",
-    description: "Linear Diffusion. Each column is XORed with its neighbor to spread bits vertically.",
-    isModified: () => true
-  },
-  {
-    type: "MIX_DIAGONALS",
-    label: "MIX DIAGONALS",
-    description: "Diagonal Propagation. Cells mix with diagonal neighbors. Bottom row and right column are read-only sources.",
-    isModified: (r, c) => r < 3 && c < 3
-  },
-  {
-    type: "MIX_MATRIX",
-    label: "MIX MATRIX",
-    description: "Affine Transform. Matrix multiplication with added noise (Lower & Upper triangular passes).",
+    description: "MDS Diffusion. Columns are multiplied by a circulating matrix of Prime Square Roots (vertical mixing).",
     isModified: () => true
   },
   {
     type: "KEYSTREAM_READY",
     label: "KEYSTREAM GENERATED",
-    description: "The rounds are complete. This pseudorandom block is the 'Keystream'.",
+    description: "The 16 rounds are complete. This pseudorandom block is the 'Keystream'.",
     isModified: () => false
   },
   {
     type: "FINAL_XOR",
     label: "XOR WITH PLAINTEXT",
-    description: "The Keystream is XORed with your data (DEADBEEF...) to produce the final Ciphertext.",
+    description: "The Keystream is XORed with your data (DEADBEEF...) to produce the final Ciphertext (CTR Mode).",
     isModified: () => true
   }
 ]
@@ -108,7 +103,15 @@ export function EncryptionDemo() {
     switch (currentStep) {
       case "INIT": return COUNTER_GRID
 
-      case "KEY_INJECTION":
+      case "WHITENING":
+        for (let r = 0; r < 4; r++) {
+            for (let c = 0; c < 4; c++) {
+                newGrid[r][c] = transformValue(newGrid[r][c], (seed * 5) + 0xAA)
+            }
+        }
+        break;
+
+      case "ROUND_KEY":
         for (let r = 0; r < 4; r++) {
             for (let c = 0; c < 4; c++) {
                 newGrid[r][c] = transformValue(newGrid[r][c], (seed * 11) + r + c)
@@ -119,43 +122,28 @@ export function EncryptionDemo() {
       case "SUBCELL":
         for (let r = 0; r < 4; r++) {
           for (let c = 0; c < 4; c++) {
-             newGrid[r][c] = transformValue(newGrid[r][c], getValue(newGrid[r][c]) + 7)
+             // Simulate ARX nonlinearity
+             newGrid[r][c] = transformValue(newGrid[r][c], getValue(newGrid[r][c]) + 7 + r)
           }
         }
         break
 
       case "SHIFT_ROWS":
-        newGrid[0] = [...inputGrid[0].slice(1), ...inputGrid[0].slice(0, 1)]
-        newGrid[1] = [...inputGrid[1].slice(2), ...inputGrid[1].slice(0, 2)]
-        newGrid[2] = [...inputGrid[2].slice(3), ...inputGrid[2].slice(0, 3)]
-        newGrid[3] = [...inputGrid[3].slice(1), ...inputGrid[3].slice(0, 1)]
+        // Simulate row shifting (row 0: shift 0, row 1: shift 1, etc)
+        newGrid[0] = [...inputGrid[0]]
+        newGrid[1] = [...inputGrid[1].slice(1), ...inputGrid[1].slice(0, 1)]
+        newGrid[2] = [...inputGrid[2].slice(2), ...inputGrid[2].slice(0, 2)]
+        newGrid[3] = [...inputGrid[3].slice(3), ...inputGrid[3].slice(0, 3)]
         break
 
       case "MIX_COLUMNS":
+        // Simulate MDS column mixing (combine with neighbor)
         for (let c = 0; c < 4; c++) {
           const nextCol = (c + 1) % 4;
           for (let r = 0; r < 4; r++) {
              const neighborVal = getValue(inputGrid[r][nextCol]);
              newGrid[r][c] = transformValue(newGrid[r][c], neighborVal)
           }
-        }
-        break
-
-      case "MIX_DIAGONALS":
-         for (let r = 0; r < 3; r++) {
-            for (let c = 0; c < 3; c++) {
-                const neighborVal = getValue(inputGrid[r + 1][c + 1]);
-                newGrid[r][c] = transformValue(newGrid[r][c], neighborVal)
-            }
-         }
-         break;
-
-      case "MIX_MATRIX":
-        for (let r = 0; r < 4; r++) {
-             for (let c = 0; c < 4; c++) {
-                 const noise = r + 10;
-                 newGrid[r][c] = transformValue(newGrid[r][c], noise)
-             }
         }
         break
 
@@ -220,8 +208,8 @@ export function EncryptionDemo() {
              <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
              <p className="text-sm text-muted-foreground font-mono">
                 <strong className="text-primary">Educational Visualization:</strong> This simplified demo uses a 4x4 byte matrix.
-                The actual REX protocol is far more complex, employing <strong className="text-foreground">64-bit arithmetic, deterministic grid shuffling, secure key scheduling</strong>, and 14 cryptographic rounds.
-                The visual effects shown here illustrate the flow of data but do not represent the full mathematical precision of the cipher.
+                The actual REX protocol uses <strong className="text-foreground">64-bit arithmetic, an 8x8 Grid state, </strong> and 16 cryptographic rounds.
+                The visual effects shown here illustrate the flow of data (CTR Mode) but do not represent the full mathematical precision.
              </p>
           </div>
         </div>
@@ -269,7 +257,7 @@ export function EncryptionDemo() {
                           stepIndex === 0 && "text-foreground font-medium"
                         )}
                       >
-                         {cell}
+                          {cell}
                       </div>
                     )
                   })
