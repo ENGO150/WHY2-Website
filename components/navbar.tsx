@@ -2,10 +2,21 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Github, Menu, Lock, ArrowRight } from "lucide-react"
+import { Github, Menu, Lock, ArrowRight, BarChart3 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 const NAV_LINKS = [
   { label: "How It Works", href: "#demo" },
@@ -65,6 +76,65 @@ export function Navbar() {
     </Button>
   )
 
+  const BenchmarkLink = ({ mobile }: { mobile?: boolean }) => (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <button
+          className={cn(
+            mobile
+              ? "group flex w-full items-center justify-between text-2xl font-bold text-muted-foreground hover:text-foreground transition-all duration-300 py-2 border-b border-transparent hover:border-primary/20"
+              : "text-sm font-medium text-muted-foreground hover:text-primary transition-colors font-mono flex items-center gap-2"
+          )}
+        >
+          {mobile ? (
+            <>
+              <span className="flex items-center gap-4">
+                <span className="font-mono text-sm text-primary/50 group-hover:text-primary transition-colors">
+                  05
+                </span>
+                Benchmarks
+              </span>
+              <ArrowRight className="w-5 h-5 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary" />
+            </>
+          ) : (
+            <>
+              <BarChart3 className="w-4 h-4" />
+              Benchmarks
+            </>
+          )}
+        </button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>⚠️ Benchmark Environment</AlertDialogTitle>
+          <AlertDialogDescription className="space-y-3">
+            <p>
+              You are about to view automated benchmark reports.
+            </p>
+            <div className="rounded-md bg-muted p-3 text-sm text-muted-foreground">
+              <p className="font-semibold text-foreground mb-1">Performance Note:</p>
+              These tests run on a <strong>Raspberry Pi 5</strong> in a containerized environment (Docker/GitLab Runner).
+              The results are primarily for <strong>regression testing</strong> and are significantly lower than performance on standard desktop hardware.
+            </div>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Back</AlertDialogCancel>
+          <AlertDialogAction asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <a
+              href="https://why2.satan.red/benches/report/index.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setIsOpen(false)}
+            >
+              I understand, view data
+            </a>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+
   return (
     <header
       className={cn(
@@ -98,6 +168,7 @@ export function Navbar() {
               {link.label}
             </a>
           ))}
+          <BenchmarkLink />
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
@@ -142,6 +213,7 @@ export function Navbar() {
                       <ArrowRight className="w-5 h-5 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary" />
                     </a>
                   ))}
+                  <BenchmarkLink mobile />
                 </nav>
 
                 <div className="mt-auto pt-8 space-y-4">
