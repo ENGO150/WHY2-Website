@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Github, Menu, Lock, ArrowRight, BarChart3 } from "lucide-react"
+import { Github, Menu, Lock, ArrowRight, BarChart3, PlayCircle, Layers, Terminal, MessageSquare } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
@@ -19,10 +19,10 @@ import {
 } from "@/components/ui/alert-dialog"
 
 const NAV_LINKS = [
-  { label: "How It Works", href: "#demo" },
-  { label: "Features", href: "#features" },
-  { label: "Quick Start", href: "#code" },
-  { label: "Chat", href: "#poc" },
+  { label: "How It Works", href: "#demo", icon: PlayCircle },
+  { label: "Features", href: "#features", icon: Layers },
+  { label: "Quick Start", href: "#code", icon: Terminal },
+  { label: "Chat", href: "#poc", icon: MessageSquare },
 ]
 
 export function Navbar() {
@@ -163,8 +163,9 @@ export function Navbar() {
               key={link.label}
               href={link.href}
               onClick={(e) => scrollToSection(e, link.href)}
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors font-mono"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors font-mono flex items-center gap-2"
             >
+              <link.icon className="w-4 h-4" />
               {link.label}
             </a>
           ))}
