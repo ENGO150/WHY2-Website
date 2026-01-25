@@ -123,7 +123,6 @@ export function Navbar() {
           <AlertDialogAction asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
             <a
               href="https://why2.satan.red/benches/report/index.html"
-              target="_blank"
               rel="noopener noreferrer"
               onClick={() => setIsOpen(false)}
             >
