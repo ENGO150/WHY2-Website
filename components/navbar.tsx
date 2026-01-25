@@ -107,16 +107,16 @@ export function Navbar() {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>⚠️ Benchmark Environment</AlertDialogTitle>
-          <AlertDialogDescription className="space-y-3">
-            <p>
-              You are about to view automated benchmark reports.
-            </p>
-            <div className="rounded-md bg-muted p-3 text-sm text-muted-foreground">
-              <p className="font-semibold text-foreground mb-1">Performance Note:</p>
-              These tests run on a <strong>Raspberry Pi 5</strong> in a containerized environment (Docker/GitLab Runner).
-              The results are primarily for <strong>regression testing</strong> and are significantly lower than performance on standard desktop hardware.
-            </div>
+          <AlertDialogDescription>
+            You are about to view automated benchmark reports.
           </AlertDialogDescription>
+
+          {/* Moved the div OUTSIDE of AlertDialogDescription to prevent hydration error (<p> inside <p>) */}
+          <div className="rounded-md bg-muted p-3 text-sm text-muted-foreground mt-3 text-left">
+            <p className="font-semibold text-foreground mb-1">Performance Note:</p>
+            These tests run on a <strong>Raspberry Pi 5</strong> in a containerized environment (Docker/GitLab Runner).
+            The results are primarily for <strong>regression testing</strong> and are significantly lower than performance on standard desktop hardware.
+          </div>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Back</AlertDialogCancel>
