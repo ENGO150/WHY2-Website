@@ -14,7 +14,11 @@ export function Footer() {
             </div>
             <div className="font-mono">
               <span className="text-foreground font-semibold">WHY2</span>
-              <span className="text-muted-foreground text-sm ml-2">© {new Date().getFullYear()} Václav Šmejkal</span>
+              <span className="text-muted-foreground text-sm ml-2">© {new Date().getFullYear() + " "}
+                <a href="https://satan.red" target="_blank" className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 items-center gap-1">
+                  Václav Šmejkal
+                </a>
+              </span>
             </div>
           </div>
 
