@@ -36,7 +36,7 @@ const STEPS: EncryptionStep[] = [
   {
     type: "SUBCELL",
     label: "SUBCELL (ARX)",
-    description: "Nonlinear Layer. 32 rounds of Add-Rotate-XOR per cell using Golden Ratio constants to destroy linearity.",
+    description: "Nonlinear Layer. 4 rounds of Add-Rotate-XOR per cell using Golden Ratio constants to destroy linearity.",
     isModified: () => true
   },
   {
@@ -48,7 +48,7 @@ const STEPS: EncryptionStep[] = [
   {
     type: "MIX_COLUMNS",
     label: "MIX COLUMNS",
-    description: "MDS Diffusion. Columns are multiplied by a circulating matrix of Prime Square Roots (vertical mixing).",
+    description: "MDS Diffusion. Columns are multiplied by a strictly invertible Cauchy matrix, guaranteeing an optimal branch number and perfect avalanche characteristics.",
     isModified: () => true
   },
   {
