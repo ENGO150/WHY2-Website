@@ -1,95 +1,113 @@
 "use client"
 
-import { MessageSquare, Lock, Server } from "lucide-react"
+import { MessageSquare, Lock, Server, ArrowRight } from "lucide-react"
 
 export function ProofOfConcept() {
   return (
-    <section className="py-24 px-4 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/2 left-0 w-1/2 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-        <div className="absolute top-1/2 right-0 w-1/2 h-px bg-gradient-to-l from-transparent via-accent/30 to-transparent" />
-      </div>
+    <section className="py-24 px-4 border-t border-border/50">
+      <div className="container mx-auto max-w-6xl">
+        {/* Header */}
+        <div className="mb-16 max-w-lg">
+          <p className="font-mono text-xs tracking-widest uppercase text-primary mb-3">Proof of Concept</p>
+          <h2 className="font-mono text-3xl md:text-4xl font-bold leading-tight mb-4">
+            Powers a <span className="text-primary">minimalist chat application</span>
+          </h2>
+          <p className="text-muted-foreground leading-relaxed">
+            WHY2 isn&apos;t just a library — it&apos;s the backbone of a secure{" "}
+            <span className="text-foreground font-mono">text</span> and{" "}
+            <span className="text-foreground font-mono">voice</span>{" "}
+            messaging platform designed for individuals and small groups who value their privacy above all else.
+          </p>
+          <div className="mt-8 flex items-center">
+            <div className="font-mono text-sm bg-[#060608] border border-border rounded-lg px-5 py-3 flex items-center gap-3">
+              <span className="text-primary">$</span>
+              <span className="text-muted-foreground">cargo install why2-chat</span>
+            </div>
+          </div>
+        </div>
 
-      <div className="container mx-auto max-w-5xl relative">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Left: Icon showcase */}
-          <div className="relative">
-            <div className="relative w-full aspect-square max-w-md mx-auto">
-              {/* Central element */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30 flex items-center justify-center shadow-[0_0_60px_rgba(168,85,247,0.2)]">
-                  <Lock className="w-12 h-12 text-primary" />
-                </div>
-              </div>
-
-              {/* Orbiting elements */}
-              <div className="absolute top-8 left-8 w-16 h-16 rounded-xl bg-card border border-border/50 flex items-center justify-center animate-float">
-                <MessageSquare className="w-8 h-8 text-accent" />
-              </div>
-
-              <div className="absolute bottom-8 right-8 w-16 h-16 rounded-xl bg-card border border-border/50 flex items-center justify-center animate-float-delayed">
-                <Server className="w-8 h-8 text-primary" />
-              </div>
-
-              {/* Decorative lines */}
-              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 400">
-                <circle
-                  cx="200"
-                  cy="200"
-                  r="140"
-                  fill="none"
-                  stroke="url(#gradient)"
-                  strokeWidth="1"
-                  strokeDasharray="8 8"
-                  className="animate-spin-slow"
-                />
-                <defs>
-                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="rgb(168 85 247 / 0.3)" />
-                    <stop offset="100%" stopColor="rgb(236 72 153 / 0.3)" />
-                  </linearGradient>
-                </defs>
-              </svg>
+        {/* Horizontal data flow */}
+        <div className="flex flex-col md:flex-row items-stretch gap-0 mb-16 overflow-x-auto">
+          {/* Client */}
+          <div className="flex-1 min-w-[180px] bg-card border border-border rounded-lg p-5 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-lg bg-secondary border border-border flex items-center justify-center shrink-0">
+              <MessageSquare className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-mono text-sm font-semibold text-foreground">Client</p>
+              <p className="font-mono text-xs text-muted-foreground">Plaintext input</p>
             </div>
           </div>
 
-          {/* Right: Text content */}
-          <div className="space-y-6">
-            <div className="inline-block font-mono text-sm text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-              // Proof Of Concept
+          {/* Arrow 1 */}
+          <div className="flex items-center justify-center px-2 py-4 md:py-0">
+            <div className="hidden md:flex items-center">
+              <div className="w-8 h-px bg-border" />
+              <ArrowRight className="w-4 h-4 text-primary -mx-1" />
+              <div className="w-8 h-px bg-border" />
             </div>
+            <div className="md:hidden flex flex-col items-center">
+              <div className="h-4 w-px bg-border" />
+              <ArrowRight className="w-4 h-4 text-primary rotate-90 -my-0.5" />
+              <div className="h-4 w-px bg-border" />
+            </div>
+          </div>
 
-            <h2 className="font-mono text-3xl md:text-4xl font-bold leading-tight">
-              Powers a{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-                minimalist chat application
-              </span>
-            </h2>
+          {/* WHY2 Encryption */}
+          <div className="flex-1 min-w-[200px] bg-primary/[0.04] border border-primary/25 rounded-lg p-5 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-lg bg-card border border-primary/30 flex items-center justify-center shrink-0">
+              <Lock className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-mono text-sm font-semibold text-primary">WHY2 / REX</p>
+              <p className="font-mono text-xs text-muted-foreground">Encrypted transport</p>
+            </div>
+          </div>
 
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              WHY2 isn't just a library — it's the backbone of a secure{" "}
-              <span className="text-primary font-mono">text</span> and <span className="text-primary font-mono">voice</span>{" "}
-              messaging platform designed for individuals and small groups who value their privacy above all else.
+          {/* Arrow 2 */}
+          <div className="flex items-center justify-center px-2 py-4 md:py-0">
+            <div className="hidden md:flex items-center">
+              <div className="w-8 h-px bg-border" />
+              <ArrowRight className="w-4 h-4 text-primary -mx-1" />
+              <div className="w-8 h-px bg-border" />
+            </div>
+            <div className="md:hidden flex flex-col items-center">
+              <div className="h-4 w-px bg-border" />
+              <ArrowRight className="w-4 h-4 text-primary rotate-90 -my-0.5" />
+              <div className="h-4 w-px bg-border" />
+            </div>
+          </div>
+
+          {/* Server */}
+          <div className="flex-1 min-w-[180px] bg-card border border-border rounded-lg p-5 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-lg bg-secondary border border-border flex items-center justify-center shrink-0">
+              <Server className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <div>
+              <p className="font-mono text-sm font-semibold text-foreground">Server</p>
+              <p className="font-mono text-xs text-muted-foreground">Handles message routing</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom row: Quote + tags */}
+        <div className="grid md:grid-cols-2 gap-8 items-start">
+          <blockquote className="pl-6 border-l-2 border-primary/30 py-2">
+            <p className="text-lg italic text-foreground/80">
+              &ldquo;If privacy is outlawed, only outlaws will have privacy.&rdquo;
             </p>
+            <p className="text-muted-foreground mt-1">— Phil Zimmermann</p>
+          </blockquote>
 
-            <blockquote className="relative pl-6 border-l-2 border-primary/50 py-2">
-              <p className="text-lg italic text-foreground/90">
-                "If privacy is outlawed, only outlaws will have privacy."
-              </p>
-              <p className="text-lg text-muted-foreground italic leading-relaxed">- Phil Zimmermann</p>
-            </blockquote>
-
-            <div className="flex flex-wrap gap-3 pt-4">
-              {["Self-Hosted", "Minimalist", "Voice Chat Support", "Terminal-Based", "No Telemetry", "Open Source"].map((tag) => (
-                <span
-                  key={tag}
-                  className="font-mono text-xs px-3 py-1.5 rounded-full bg-card border border-border/50 text-muted-foreground"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+          <div className="flex flex-wrap gap-2 md:justify-end items-start pt-1">
+            {["Self-Hosted", "Minimalist", "Voice Chat", "Terminal-Based", "No Telemetry", "Open Source"].map((tag) => (
+              <span
+                key={tag}
+                className="font-mono text-xs px-3 py-1.5 rounded bg-card border border-border text-muted-foreground"
+              >
+                {tag}
+              </span>
+            ))}
           </div>
         </div>
       </div>

@@ -19,8 +19,56 @@ fn main()
     }
 }`
 
+type Token = { text: string; cls?: string }
+
+function tokenizeLine(line: string): Token[] {
+  if (line.trim() === "") return [{ text: " " }]
+
+  const result: Token[] = []
+  let remaining = line
+
+  const rules: [RegExp, string][] = [
+    [/^\/\/.*$/, "text-muted-foreground/50"],
+    [/^"[^"]*"/, "text-pink-400"],
+    [/^(use|fn|let|for|in|pub|mod|struct|impl|return|if|else|match|mut|ref)\b/, "text-fuchsia-400"],
+    [/^(String|Option|Result|Vec|Box|None|Some|Ok|Err|true|false)\b/, "text-rose-300"],
+    [/^(println!|print!|format!|vec!|panic!|assert!)/, "text-pink-300"],
+    [/^\.(expect|unwrap)/, "text-pink-300"],
+    [/^\b\d+\b/, "text-rose-400"],
+    [/^[{}()\[\];,]/, "text-muted-foreground"],
+    [/^::/, "text-muted-foreground"],
+    [/^[&]/, "text-fuchsia-400"],
+    [/^[<>]/, "text-muted-foreground"],
+    [/^\s+/, ""],
+    [/^[a-zA-Z_]\w*/, ""],
+  ]
+
+  while (remaining.length > 0) {
+    let matched = false
+    for (const [pattern, cls] of rules) {
+      const m = remaining.match(pattern)
+      if (m) {
+        result.push({ text: m[0], cls })
+        remaining = remaining.slice(m[0].length)
+        matched = true
+        break
+      }
+    }
+    if (!matched) {
+      // Consume one char as plain text
+      const nextSpecial = remaining.slice(1).search(/["()\[\]{};,.:&<>\d\/]|\b(use|fn|let|for|in|pub|mod|struct|impl|return|if|else|match|mut|ref|String|Option|Result|Vec|Box|None|Some|Ok|Err|true|false|println!|print!|format!)\b/)
+      const end = nextSpecial === -1 ? remaining.length : nextSpecial + 1
+      result.push({ text: remaining.slice(0, end) })
+      remaining = remaining.slice(end)
+    }
+  }
+
+  return result
+}
+
 export function CodeShowcase() {
   const [copied, setCopied] = useState(false)
+  const lines = codeExample.split("\n")
 
   const copyCode = () => {
     navigator.clipboard.writeText(codeExample)
@@ -29,125 +77,55 @@ export function CodeShowcase() {
   }
 
   return (
-    <section className="py-24 px-4 relative">
-      {/* Background accent */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
-
-      <div className="container mx-auto max-w-4xl relative">
-        {/* Section header */}
-        <div className="text-center mb-12">
-          <h2 className="font-mono text-3xl md:text-4xl font-bold mb-4">
-            <span className="text-primary">fn</span> quick_start<span className="text-primary">()</span>
-          </h2>
-          <p className="text-muted-foreground">Get started with WHY2 in seconds</p>
+    <section className="py-24 px-4">
+      <div className="container mx-auto max-w-4xl">
+        <div className="mb-12 max-w-lg">
+          <p className="font-mono text-xs tracking-widest uppercase text-primary mb-3">Usage</p>
+          <h2 className="font-mono text-3xl md:text-4xl font-bold mb-4">Quick Start</h2>
+          <p className="text-muted-foreground">Get started with WHY2 in seconds.</p>
         </div>
 
-        {/* Code window */}
-        <div className="relative group">
-          {/* Glow effect */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 rounded-xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity duration-500" />
-
-          {/* Window */}
-          <div className="relative bg-[#0d0d0d] rounded-xl border border-border/50 overflow-hidden shadow-2xl">
-            {/* Window header */}
-            <div className="flex items-center justify-between px-4 py-3 bg-[#161616] border-b border-border/50">
-              <div className="flex items-center gap-2">
-                <div className="flex gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/80" />
-                </div>
-                <div className="ml-4 flex items-center gap-2 text-muted-foreground text-sm font-mono">
-                  <Terminal className="w-4 h-4" />
-                  main.rs
-                </div>
+        <div className="bg-[#060608] rounded-lg border border-border overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+            <div className="flex items-center gap-2">
+              <div className="flex gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+                <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+                <div className="w-3 h-3 rounded-full bg-[#28c840]" />
               </div>
-
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={copyCode}
-                className="text-muted-foreground hover:text-foreground hover:bg-primary/10"
-              >
-                {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-              </Button>
+              <div className="ml-4 flex items-center gap-2 text-muted-foreground text-sm font-mono">
+                <Terminal className="w-4 h-4" />
+                main.rs
+              </div>
             </div>
-
-            {/* Code content */}
-            <div className="p-6 overflow-x-auto">
-              <pre className="font-mono text-sm leading-relaxed">
-                <code>
-                  {/* USE statement */}
-                  <span className="text-indigo-400">use</span>{" "}
-                  <span className="text-muted-foreground">why2::</span>
-                  <span className="text-violet-300">encrypter</span>;
-                  {"\n\n"}
-
-                  {/* FN MAIN */}
-                  <span className="text-indigo-400">fn</span> <span className="text-purple-300">main</span>
-                  <span className="text-muted-foreground">{"()"}</span> <span className="text-muted-foreground">{"\n{"}</span>
-                  {"\n"}
-                  {"    "}
-
-                  {/* LET MESSAGE */}
-                  <span className="text-indigo-400">let</span> <span className="text-foreground">message</span>{" "}
-                  <span className="text-indigo-400">=</span> <span className="text-violet-300">String</span>
-                  <span className="text-muted-foreground">::</span>
-                  <span className="text-purple-300">from</span>(
-                  <span className="text-fuchsia-500">"Privacy is a right."</span>
-                  <span className="text-muted-foreground">);</span>
-                  {"\n\n"}
-                  {"    "}
-
-                  {/* LET ENCRYPTED */}
-                  <span className="text-indigo-400">let</span> <span className="text-foreground">encrypted</span>{" "}
-                  <span className="text-indigo-400">=</span> <span className="text-violet-300">encrypter</span>
-                  <span className="text-muted-foreground">::</span>
-                  <span className="text-purple-300">encrypt_string</span>
-                  <span className="text-muted-foreground">::{"<"}</span>
-                  <span className="text-pink-400">8</span>,<span className="text-pink-400">8</span>
-                  <span className="text-muted-foreground">{">"}(</span>
-                  <span className="text-indigo-400">&</span>
-                  <span className="text-foreground">message, </span>
-                  <span className="text-violet-300">None</span>
-                  <span className="text-muted-foreground">)</span>
-                  {"\n"}
-                  {"                        "}
-                  <span className="text-muted-foreground">.</span>
-                  <span className="text-purple-300">expect</span>
-                  <span className="text-muted-foreground">(</span>
-                  <span className="text-fuchsia-500">"Encryption failed."</span>
-                  <span className="text-muted-foreground">);</span>
-                  {"\n\n"}
-                  {"    "}
-
-                  {/* FOR LOOP */}
-                  <span className="text-indigo-400">for</span> grid <span className="text-indigo-400">in</span>{" "}
-                  <span className="text-indigo-400">&</span>
-                  <span className="text-foreground">encrypted.output</span>
-                  {"\n"}
-                  {"    "}
-                  <span className="text-muted-foreground">{"{"}</span>
-                  {"\n"}
-                  {"        "}
-                  <span className="text-purple-300">println!</span>
-                  <span className="text-muted-foreground">(</span>
-                  <span className="text-fuchsia-500">{'"Encrypted Grid: {}"'}</span>
-                  <span className="text-muted-foreground">, grid);</span>
-                  {"\n"}
-                  {"    "}
-                  <span className="text-muted-foreground">{"}"}</span>
-                  {"\n"}
-                  <span className="text-muted-foreground">{"}"}</span>
-                </code>
-              </pre>
-            </div>
+            <Button size="sm" variant="ghost" onClick={copyCode} className="text-muted-foreground hover:text-foreground">
+              {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+            </Button>
           </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <tbody>
+                {lines.map((line, i) => (
+                  <tr key={i} className="hover:bg-white/[0.015]">
+                    <td className="py-0 pl-4 pr-3 text-right font-mono text-xs text-muted-foreground/20 select-none border-r border-border/20 w-[1%] whitespace-nowrap leading-relaxed align-top">
+                      {i + 1}
+                    </td>
+                    <td className="py-0 pl-5 pr-6 font-mono text-sm whitespace-pre leading-relaxed">
+                      {tokenizeLine(line).map((tok, j) =>
+                        <span key={j} className={tok.cls || "text-foreground/70"}>{tok.text}</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="h-4" />
         </div>
 
-        {/* Install command */}
-        <div className="mt-8 flex items-center justify-center gap-4">
-          <div className="font-mono text-sm bg-[#0d0d0d] border border-border/50 rounded-lg px-6 py-3 flex items-center gap-3">
+        <div className="mt-8 flex items-center">
+          <div className="font-mono text-sm bg-[#060608] border border-border rounded-lg px-5 py-3 flex items-center gap-3">
             <span className="text-primary">$</span>
             <span className="text-muted-foreground">cargo add why2</span>
           </div>

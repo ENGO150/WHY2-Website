@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport = {
-  themeColor: "#a855f7",
+  themeColor: "#d946a8",
   width: "device-width",
   initialScale: 1,
 }
@@ -44,7 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className={`font-sans antialiased`}>
+      <body className={`font-sans antialiased noise-overlay`}>
         <SmoothScroller />
         {children}
       </body>

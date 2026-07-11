@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Github, Menu, Lock, ArrowRight, BarChart3, PlayCircle, Layers, Terminal, MessageSquare } from "lucide-react"
+import { Github, Menu, Lock, BarChart3 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
@@ -19,10 +19,10 @@ import {
 } from "@/components/ui/alert-dialog"
 
 const NAV_LINKS = [
-  { label: "How It Works", href: "#demo", icon: PlayCircle },
-  { label: "Features", href: "#features", icon: Layers },
-  { label: "Quick Start", href: "#code", icon: Terminal },
-  { label: "Chat", href: "#poc", icon: MessageSquare },
+  { label: "How It Works", href: "#demo" },
+  { label: "Features", href: "#features" },
+  { label: "Quick Start", href: "#code" },
+  { label: "Chat", href: "#poc" },
 ]
 
 export function Navbar() {
@@ -60,10 +60,9 @@ export function Navbar() {
     <Button
       variant="outline"
       className={cn(
-        "font-mono gap-2 transition-all duration-300",
-        "bg-transparent border-primary/20 text-foreground",
-        "hover:bg-primary/10 hover:border-primary/50 hover:text-primary",
-        "shadow-sm hover:shadow-[0_0_15px_rgba(168,85,247,0.15)]",
+        "font-mono gap-2 transition-colors duration-200",
+        "bg-transparent border-border text-muted-foreground",
+        "hover:border-primary/50 hover:text-primary",
         fullWidth && "w-full",
         className
       )}
@@ -82,20 +81,12 @@ export function Navbar() {
         <button
           className={cn(
             mobile
-              ? "group flex w-full items-center justify-between text-2xl font-bold text-muted-foreground hover:text-foreground transition-all duration-300 py-2 border-b border-transparent hover:border-primary/20"
-              : "text-sm font-medium text-muted-foreground hover:text-primary transition-colors font-mono flex items-center gap-2"
+              ? "group flex w-full items-center justify-between text-lg font-medium text-muted-foreground hover:text-primary transition-colors duration-200 py-3"
+              : "text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 font-mono flex items-center gap-2"
           )}
         >
           {mobile ? (
-            <>
-              <span className="flex items-center gap-4">
-                <span className="font-mono text-sm text-primary/50 group-hover:text-primary transition-colors">
-                  05
-                </span>
-                Benchmarks
-              </span>
-              <ArrowRight className="w-5 h-5 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary" />
-            </>
+            <>Benchmarks</>
           ) : (
             <>
               <BarChart3 className="w-4 h-4" />
@@ -137,9 +128,9 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-200",
         isScrolled
-          ? "bg-background/80 backdrop-blur-md border-b border-border/50 py-3"
+          ? "bg-background/90 backdrop-blur-sm border-b border-border/50 py-3"
           : "bg-transparent py-5"
       )}
     >
@@ -150,7 +141,7 @@ export function Navbar() {
             className="flex items-center gap-2 font-mono font-bold text-xl tracking-tighter hover:opacity-80 transition-opacity"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 text-primary">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-card border border-border text-primary">
             <Lock className="w-4 h-4" />
           </div>
           WHY2
@@ -162,9 +153,8 @@ export function Navbar() {
               key={link.label}
               href={link.href}
               onClick={(e) => scrollToSection(e, link.href)}
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors font-mono flex items-center gap-2"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 font-mono"
             >
-              <link.icon className="w-4 h-4" />
               {link.label}
             </a>
           ))}
@@ -178,51 +168,33 @@ export function Navbar() {
         <div className="md:hidden">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-primary/10 hover:text-primary">
+              <Button variant="ghost" size="icon" className="hover:bg-card hover:text-primary">
                 <Menu className="w-6 h-6" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
 
-            <SheetContent side="right" className="w-full sm:w-[400px] flex flex-col p-0 border-l border-primary/20 bg-background/95 backdrop-blur-xl">
+            <SheetContent side="right" className="w-full sm:w-[360px] flex flex-col p-0 border-l border-border bg-background">
               <SheetTitle className="sr-only">Mobile Navigation</SheetTitle>
               <SheetDescription className="sr-only">Main site navigation</SheetDescription>
 
               <div className="flex flex-col h-full p-8">
-
-                <div className="mb-12 pt-4 border-b border-border/50 pb-4">
-                    <span className="font-mono text-xs text-primary font-bold tracking-widest uppercase">
-                        // System Navigation
-                    </span>
-                </div>
-
-                <nav className="flex flex-col gap-6">
-                  {NAV_LINKS.map((link, index) => (
+                <nav className="flex flex-col gap-2 pt-8">
+                  {NAV_LINKS.map((link) => (
                     <a
                       key={link.label}
                       href={link.href}
                       onClick={(e) => scrollToSection(e, link.href)}
-                      className="group flex items-center justify-between text-2xl font-bold text-muted-foreground hover:text-foreground transition-all duration-300 py-2 border-b border-transparent hover:border-primary/20"
+                      className="text-lg font-medium text-muted-foreground hover:text-primary transition-colors duration-200 py-3"
                     >
-                      <span className="flex items-center gap-4">
-                          <span className="font-mono text-sm text-primary/50 group-hover:text-primary transition-colors">
-                              0{index + 1}
-                          </span>
-                          {link.label}
-                      </span>
-                      <ArrowRight className="w-5 h-5 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary" />
+                      {link.label}
                     </a>
                   ))}
                   <BenchmarkLink mobile />
                 </nav>
 
                 <div className="mt-auto pt-8 space-y-4">
-                    <div className="flex items-center justify-center gap-2 mb-4">
-                        <div className="h-px bg-border flex-1" />
-                        <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Connect</span>
-                        <div className="h-px bg-border flex-1" />
-                    </div>
-                    <GithubButton fullWidth className="h-14 text-lg" />
+                    <GithubButton fullWidth className="h-12" />
                 </div>
               </div>
 
