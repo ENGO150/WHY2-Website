@@ -101,10 +101,10 @@ export function EncryptionDemo() {
   const isFinal = stepIndex === STEPS.length - 1
 
   return (
-    <section className="py-24 px-4 bg-card/50 border-y border-border">
+    <section className="py-10 lg:py-24 px-4 bg-card/50 border-y border-border">
       <div className="container mx-auto max-w-6xl">
         {/* Header row — title left, info right */}
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6 lg:gap-6 lg:mb-12">
           <div>
             <p className="font-mono text-xs tracking-widest uppercase text-primary mb-3">Pipeline</p>
             <h2 className="font-mono text-3xl md:text-4xl font-bold">Inside the REX Core</h2>
@@ -194,8 +194,8 @@ export function EncryptionDemo() {
           </div>
 
           {/* Column 3: Step details + controls */}
-          <div className="flex flex-col justify-between min-h-[380px]">
-            <div className="space-y-4">
+          <div className="flex flex-col justify-between min-h-0 lg:min-h-[380px]">
+            <div className="space-y-4 order-last lg:order-first">
               <div className="flex items-center gap-3">
                 <span className={cn(
                   "flex h-7 px-2.5 items-center justify-center rounded text-xs font-mono font-bold border",
@@ -222,7 +222,7 @@ export function EncryptionDemo() {
             </div>
 
             {/* Controls */}
-            <div className="flex gap-3 mt-8">
+            <div className="flex gap-3 mb-8 lg:mb-0 lg:mt-8 order-first lg:order-last">
               <button
                 onClick={handlePrev}
                 disabled={stepIndex === 0}
