@@ -100,7 +100,7 @@ export function Navbar() {
           <div className="rounded-md bg-muted p-3 text-sm text-muted-foreground mt-3 text-left">
             <p className="font-semibold text-foreground mb-1">Performance Note:</p>
             These tests run on a <strong>Raspberry Pi 5</strong> in a containerized environment (Docker/GitLab Runner).
-            The results are primarily for <strong>regression testing</strong> and are significantly lower than performance on standard desktop hardware.
+            The results are primarily for <strong>regression testing</strong> and are <strong>orders of magnitude</strong> lower than performance on standard desktop hardware.
           </div>
         </AlertDialogHeader>
         <AlertDialogFooter>
