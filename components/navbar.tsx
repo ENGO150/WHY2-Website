@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Github, Menu, Lock, BarChart3 } from "lucide-react"
+import { Github, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
@@ -62,7 +62,7 @@ export function Navbar() {
       className={cn(
         "font-mono gap-2 transition-colors duration-200",
         "bg-transparent border-border text-muted-foreground",
-        "hover:border-primary/50 hover:text-primary",
+        "hover:border-primary/50 hover:bg-secondary hover:text-secondary-foreground",
         fullWidth && "w-full",
         className
       )}
@@ -80,19 +80,13 @@ export function Navbar() {
       <AlertDialogTrigger asChild>
         <button
           className={cn(
+            "cursor-pointer",
             mobile
               ? "group flex w-full items-center justify-between text-lg font-medium text-muted-foreground hover:text-primary transition-colors duration-200 py-3"
               : "text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 font-mono flex items-center gap-2"
           )}
         >
-          {mobile ? (
-            <>Benchmarks</>
-          ) : (
-            <>
-              <BarChart3 className="w-4 h-4" />
-              Benchmarks
-            </>
-          )}
+          Benchmarks
         </button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -141,9 +135,6 @@ export function Navbar() {
             className="flex items-center gap-2 font-mono font-bold text-xl tracking-tighter hover:opacity-80 transition-opacity"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-card border border-border text-primary">
-            <Lock className="w-4 h-4" />
-          </div>
           WHY2
         </Link>
 

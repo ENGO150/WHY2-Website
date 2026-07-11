@@ -9,9 +9,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Logo & Copyright */}
           <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded bg-card border border-border flex items-center justify-center">
-              <Lock className="w-3.5 h-3.5 text-primary" />
-            </div>
+
             <div className="font-mono text-sm">
               <span className="text-foreground font-semibold">WHY2</span>
               <span className="text-muted-foreground ml-2">© {new Date().getFullYear()}{" "}

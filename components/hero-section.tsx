@@ -134,7 +134,7 @@ export function HeroSection() {
               <Button
                 size="lg"
                 variant="outline"
-                className="font-mono px-8 py-6 text-base border-border hover:border-primary/50 hover:text-primary transition-colors duration-200 bg-transparent"
+                className="font-mono px-8 py-6 text-base border-border hover:border-primary/50 hover:bg-secondary hover:text-secondary-foreground transition-colors duration-200 bg-transparent"
                 asChild
               >
                 <Link href="https://git.satan.red/ENGO150/WHY2" target="_blank" rel="noopener noreferrer">
