@@ -15,8 +15,9 @@ export function ProofOfConcept() {
           <p className="text-muted-foreground leading-relaxed">
             WHY2 isn&apos;t just a library — it&apos;s the backbone of a secure{" "}
             <span className="text-foreground font-mono">text</span>,{" "}
-            <span className="text-foreground font-mono">voice</span>, and{" "}
-            <span className="text-foreground font-mono">screenshare</span>{" "}
+            <span className="text-foreground font-mono">voice</span>,{" "}
+            <span className="text-foreground font-mono">screenshare</span>, and{" "}
+            <span className="text-foreground font-mono">fileshare</span>{" "}
             messaging platform designed for individuals and small groups who value their privacy above all else.
           </p>
           <div className="mt-8 flex items-center">
@@ -101,7 +102,7 @@ export function ProofOfConcept() {
           </blockquote>
 
           <div className="flex flex-wrap gap-2 md:justify-end items-start pt-1">
-            {["Self-Hosted", "Minimalist", "Voice Chat", "Screenshare", "Terminal-Based", "No Telemetry", "Open Source"].map((tag) => (
+            {["Self-Hosted", "Voice Chat", "Screenshare", "File Sharing", "Terminal-Based", "No Telemetry", "Open Source"].map((tag) => (
               <span
                 key={tag}
                 className="font-mono text-xs px-3 py-1.5 rounded bg-card border border-border text-muted-foreground"
