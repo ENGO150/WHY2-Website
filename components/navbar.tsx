@@ -43,6 +43,13 @@ export function Navbar() {
     setIsOpen(false)
 
     const element = document.querySelector(href)
+
+    // The section lives on the home page, so from any other route go there first
+    if (!element) {
+      window.location.href = `/${href}`
+      return
+    }
+
     if (element) {
       const offset = 80
       const bodyRect = document.body.getBoundingClientRect().top
@@ -151,6 +158,12 @@ export function Navbar() {
             </a>
           ))}
           <BenchmarkLink />
+          <Link
+            href="/download"
+            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 font-mono"
+          >
+            Download
+          </Link>
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
@@ -183,6 +196,13 @@ export function Navbar() {
                     </a>
                   ))}
                   <BenchmarkLink mobile />
+                  <Link
+                    href="/download"
+                    onClick={() => setIsOpen(false)}
+                    className="text-lg font-medium text-muted-foreground hover:text-primary transition-colors duration-200 py-3"
+                  >
+                    Download
+                  </Link>
                 </nav>
 
                 <div className="mt-auto pt-8 space-y-4">

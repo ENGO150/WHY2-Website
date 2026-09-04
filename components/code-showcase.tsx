@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useState } from "react"
 import { Copy, Check, Terminal } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -136,7 +137,10 @@ export function CodeShowcase() {
         </div>
 
         <p className="mt-6 font-mono text-xs text-muted-foreground/50">
-          Packaged for Arch (AUR) and Gentoo (GURU) as <span className="text-muted-foreground">why2</span>.
+          Prefer a prebuilt binary, or the desktop app?{" "}
+          <Link href="/download" className="text-muted-foreground hover:text-primary transition-colors duration-200 underline underline-offset-4">
+            Downloads
+          </Link>
         </p>
       </div>
     </section>
