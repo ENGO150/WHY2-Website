@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Github, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -143,6 +144,14 @@ export function Navbar() {
             className="flex items-center gap-2 font-mono font-bold text-xl tracking-tighter hover:opacity-80 transition-opacity"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
+          <Image
+            src="/icon.svg"
+            alt="REX logo"
+            width={32}
+            height={32}
+            className="w-7 h-7"
+            priority
+          />
           WHY2
         </Link>
 
