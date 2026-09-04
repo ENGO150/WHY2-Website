@@ -3,75 +3,68 @@
 import { useState } from "react"
 import { Copy, Check, Terminal } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
-const codeExample = `use why2::encrypter;
+type Line = { kind: "cmd" | "note"; text: string }
 
-fn main()
-{
-    let message = String::from("Privacy is a right.");
-
-    let encrypted = encrypter::encrypt_string::<8,8>(&message, None)
-                        .expect("Encryption failed.");
-
-    for grid in &encrypted.output
-    {
-        println!("Encrypted Grid: {}", grid);
-    }
-}`
-
-type Token = { text: string; cls?: string }
-
-function tokenizeLine(line: string): Token[] {
-  if (line.trim() === "") return [{ text: " " }]
-
-  const result: Token[] = []
-  let remaining = line
-
-  const rules: [RegExp, string][] = [
-    [/^\/\/.*$/, "text-muted-foreground/50"],
-    [/^"[^"]*"/, "text-foreground"],
-    [/^(use|fn|let|for|in|pub|mod|struct|impl|return|if|else|match|mut|ref)\b/, "text-foreground font-semibold"],
-    [/^(String|Option|Result|Vec|Box|None|Some|Ok|Err|true|false)\b/, "text-foreground/80"],
-    [/^(println!|print!|format!|vec!|panic!|assert!)/, "text-foreground/80"],
-    [/^\.(expect|unwrap)/, "text-foreground/80"],
-    [/^\b\d+\b/, "text-foreground/90"],
-    [/^[{}()\[\];,]/, "text-muted-foreground"],
-    [/^::/, "text-muted-foreground"],
-    [/^[&]/, "text-foreground font-semibold"],
-    [/^[<>]/, "text-muted-foreground"],
-    [/^\s+/, ""],
-    [/^[a-zA-Z_]\w*/, ""],
-  ]
-
-  while (remaining.length > 0) {
-    let matched = false
-    for (const [pattern, cls] of rules) {
-      const m = remaining.match(pattern)
-      if (m) {
-        result.push({ text: m[0], cls })
-        remaining = remaining.slice(m[0].length)
-        matched = true
-        break
-      }
-    }
-    if (!matched) {
-      // Consume one char as plain text
-      const nextSpecial = remaining.slice(1).search(/["()\[\]{};,.:&<>\d\/]|\b(use|fn|let|for|in|pub|mod|struct|impl|return|if|else|match|mut|ref|String|Option|Result|Vec|Box|None|Some|Ok|Err|true|false|println!|print!|format!)\b/)
-      const end = nextSpecial === -1 ? remaining.length : nextSpecial + 1
-      result.push({ text: remaining.slice(0, end) })
-      remaining = remaining.slice(end)
-    }
-  }
-
-  return result
+type Tab = {
+  id: string
+  label: string
+  file: string
+  intro: string
+  lines: Line[]
+  copy: string
 }
 
+const TABS: Tab[] = [
+  {
+    id: "client",
+    label: "Join a server",
+    file: "client",
+    intro: "One binary, and no configuration to write by hand. The client asks for the address, your credentials and the server's key fingerprint on first run.",
+    copy: "cargo install why2-chat\nwhy2",
+    lines: [
+      { kind: "note", text: "# install and launch the client" },
+      { kind: "cmd", text: "cargo install why2-chat" },
+      { kind: "cmd", text: "why2" },
+    ],
+  },
+  {
+    id: "server",
+    label: "Run your own",
+    file: "server",
+    intro: "The server writes its own config and identity keypair on first start. Point it at a port, open it up, and it is yours. Users, roles and bans live next to the config in ~/.config/WHY2.",
+    copy: "cargo install why2-chat --no-default-features --features server\nwhy2-server",
+    lines: [
+      { kind: "note", text: "# build the server binary only" },
+      { kind: "cmd", text: "cargo install why2-chat --no-default-features --features server" },
+      { kind: "cmd", text: "why2-server" },
+    ],
+  },
+  {
+    id: "source",
+    label: "From source",
+    file: "source",
+    intro: "Voice and screenshare need audio and codec libraries present at build time. Windows needs nothing extra. The build leaves both binaries in ./target/release.",
+    copy: "sudo apt-get install -y pkg-config libasound2-dev libopus-dev\ngit clone https://git.satan.red/ENGO150/WHY2\ncd WHY2\ncargo build --release",
+    lines: [
+      { kind: "note", text: "# debian / ubuntu. macos: brew install opus pkg-config" },
+      { kind: "cmd", text: "sudo apt-get install -y pkg-config libasound2-dev libopus-dev" },
+      { kind: "note", text: "# client (why2) and server (why2-server)" },
+      { kind: "cmd", text: "git clone https://git.satan.red/ENGO150/WHY2" },
+      { kind: "cmd", text: "cd WHY2" },
+      { kind: "cmd", text: "cargo build --release" },
+    ],
+  },
+]
+
 export function CodeShowcase() {
+  const [active, setActive] = useState(0)
   const [copied, setCopied] = useState(false)
-  const lines = codeExample.split("\n")
+  const tab = TABS[active]
 
   const copyCode = () => {
-    navigator.clipboard.writeText(codeExample)
+    navigator.clipboard.writeText(tab.copy)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -82,8 +75,30 @@ export function CodeShowcase() {
         <div className="mb-12 max-w-lg">
           <p className="font-mono text-xs tracking-widest uppercase text-primary mb-3">Usage</p>
           <h2 className="font-mono text-3xl md:text-4xl font-bold mb-4">Quick Start</h2>
-          <p className="text-muted-foreground">Get started with WHY2 in seconds.</p>
+          <p className="text-muted-foreground">
+            Talking to someone takes two commands. Hosting the room it happens in takes two more.
+          </p>
         </div>
+
+        {/* Tabs */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {TABS.map((t, i) => (
+            <button
+              key={t.id}
+              onClick={() => { setActive(i); setCopied(false) }}
+              className={cn(
+                "font-mono text-xs px-4 py-2 rounded border transition-colors duration-200 cursor-pointer",
+                i === active
+                  ? "bg-secondary border-primary/40 text-foreground"
+                  : "bg-card border-border text-muted-foreground hover:border-primary/25 hover:text-foreground"
+              )}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        <p className="text-sm text-muted-foreground mb-6">{tab.intro}</p>
 
         <div className="bg-[#060608] rounded-lg border border-border overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
@@ -95,41 +110,34 @@ export function CodeShowcase() {
               </div>
               <div className="ml-4 flex items-center gap-2 text-muted-foreground text-sm font-mono">
                 <Terminal className="w-4 h-4" />
-                main.rs
+                {tab.file}
               </div>
             </div>
             <Button size="sm" variant="ghost" onClick={copyCode} className="text-muted-foreground hover:text-foreground">
-              {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+              {copied ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-4 h-4" />}
             </Button>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <tbody>
-                {lines.map((line, i) => (
-                  <tr key={i} className="hover:bg-white/[0.015]">
-                    <td className="py-0 pl-4 pr-3 text-right font-mono text-xs text-muted-foreground/20 select-none border-r border-border/20 w-[1%] whitespace-nowrap leading-relaxed align-top">
-                      {i + 1}
-                    </td>
-                    <td className="py-0 pl-5 pr-6 font-mono text-sm whitespace-pre leading-relaxed">
-                      {tokenizeLine(line).map((tok, j) =>
-                        <span key={j} className={tok.cls || "text-foreground/70"}>{tok.text}</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="overflow-x-auto px-6 py-5">
+            <pre className="font-mono text-sm leading-relaxed">
+              {tab.lines.map((line, i) => (
+                <div key={`${tab.id}-${i}`} className="whitespace-pre">
+                  {line.kind === "cmd" && (
+                    <>
+                      <span className="text-primary select-none">$ </span>
+                      <span className="text-foreground/85">{line.text}</span>
+                    </>
+                  )}
+                  {line.kind === "note" && <span className="text-muted-foreground/40">{line.text}</span>}
+                </div>
+              ))}
+            </pre>
           </div>
-          <div className="h-4" />
         </div>
 
-        <div className="mt-8 flex items-center">
-          <div className="font-mono text-sm bg-[#060608] border border-border rounded-lg px-5 py-3 flex items-center gap-3">
-            <span className="text-primary">$</span>
-            <span className="text-muted-foreground">cargo add why2</span>
-          </div>
-        </div>
+        <p className="mt-6 font-mono text-xs text-muted-foreground/50">
+          Packaged for Arch (AUR) and Gentoo (GURU) as <span className="text-muted-foreground">why2</span>.
+        </p>
       </div>
     </section>
   )

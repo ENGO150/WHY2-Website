@@ -1,30 +1,54 @@
 "use client"
 
-import { Cpu, Grid3X3, Cog, Shield } from "lucide-react"
+import { Lock, KeyRound, Mic, MonitorUp, Server, EyeOff, TerminalSquare, FolderDown } from "lucide-react"
 
 const features = [
   {
-    icon: Cpu,
-    title: "ARX Architecture",
-    description: "Uses nonlinear Addition, Rotation, and XOR transformations instead of traditional S-boxes for cryptographic diffusion.",
+    icon: Lock,
+    title: "Encrypted Everything",
+    description: "Messages, voice packets, screen frames and file chunks all travel under the same WHY2 session keys, authenticated with HMAC-SHA256 and sequence-numbered against replay.",
     span: "md:col-span-2",
   },
   {
-    icon: Shield,
-    title: "Privacy First",
-    description: "Zero telemetry, no metadata leakage, designed for self-hosting and complete data sovereignty.",
+    icon: KeyRound,
+    title: "Post-Quantum Handshake",
+    description: "P-521 ECDH combined with ML-KEM-768, signed by the server's long-term identity and pinned on first use.",
     span: "md:col-span-1",
   },
   {
-    icon: Cog,
-    title: "Rust Native",
-    description: "Built for speed and safety, fully written in Rust with zero unsafe code and maximum performance.",
+    icon: Mic,
+    title: "Voice Channels",
+    description: "Opus over UDP with noise suppression, voice activity detection and echo cancellation.",
     span: "md:col-span-1",
   },
   {
-    icon: Grid3X3,
-    title: "Grid-Based",
-    description: "Unique input and key data formatting into grids with customizable dimensions for flexible encryption schemes.",
+    icon: MonitorUp,
+    title: "Screen Sharing",
+    description: "Pick a monitor, share it to the channel, and let anyone attach to the stream: encoded, encrypted and carried on its own authorized side channel alongside the conversation.",
+    span: "md:col-span-2",
+  },
+  {
+    icon: Server,
+    title: "Your Server, Your Rules",
+    description: "Run the server yourself on anything from a Pi to a VPS. Channels, roles, bans, rate limits and registration are all yours to configure, and nothing is brokered by anyone else.",
+    span: "md:col-span-2",
+  },
+  {
+    icon: EyeOff,
+    title: "Nothing Collected",
+    description: "No telemetry, no accounts elsewhere, no analytics. Message history lives encrypted on your own server.",
+    span: "md:col-span-1",
+  },
+  {
+    icon: FolderDown,
+    title: "File Transfer",
+    description: "Upload once, share by ID. Chunked, authenticated, and out of the way of the chat.",
+    span: "md:col-span-1",
+  },
+  {
+    icon: TerminalSquare,
+    title: "Keyboard Driven",
+    description: "A single binary with a full TUI on Linux, macOS and Windows, plus SOCKS5 support for routing an entire session through a proxy or Tor.",
     span: "md:col-span-2",
   },
 ]
@@ -36,10 +60,10 @@ export function FeaturesGrid() {
         <div className="mb-16 max-w-lg">
           <p className="font-mono text-xs tracking-widest uppercase text-primary mb-3">Capabilities</p>
           <h2 className="font-mono text-3xl md:text-4xl font-bold mb-4">Key Features</h2>
-          <p className="text-muted-foreground">Built from the ground up with security and performance in mind.</p>
+          <p className="text-muted-foreground">Everything a small, private group needs, and nothing that phones home.</p>
         </div>
 
-        {/* Bento grid — 2 wide + 2 narrow alternating */}
+        {/* Bento grid: 2 wide + 2 narrow alternating */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {features.map((feature) => (
             <div

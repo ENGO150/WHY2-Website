@@ -8,10 +8,10 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" })
 
 export const metadata: Metadata = {
-  title: "WHY2",
+  title: "WHY2 Chat",
   description:
-    "A modern, fast, and secure Rust crate designed for privacy-first applications. No S-boxes, just pure ARX-based diffusion.",
-  keywords: ["encryption", "rust", "cryptography", "privacy", "ARX", "security"],
+    "Encrypted text, voice, screenshare and file transfer in your terminal. Self-hosted, no telemetry, powered by the WHY2 encryption system.",
+  keywords: ["chat", "encrypted messaging", "voice chat", "self-hosted", "rust", "cryptography", "privacy", "post-quantum", "security"],
   icons: {
     icon: [
       {

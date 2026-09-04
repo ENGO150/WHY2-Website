@@ -4,24 +4,80 @@ import { useState, useCallback } from "react"
 import { RotateCcw, ChevronRight, ChevronLeft, Cpu, ShieldCheck, Info, ArrowDownUp } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-type StepType = "IDLE" | "INIT" | "WHITENING" | "ROUND_KEY" | "SUBCELL" | "SHIFT_ROWS" | "MIX_COLUMNS" | "KEYSTREAM_READY" | "FINAL_XOR"
+type StepType = "HANDSHAKE" | "DERIVE" | "AUTH" | "COUNTER" | "ROUNDS" | "KEYSTREAM" | "XOR" | "SEAL" | "REKEY"
 
-interface EncryptionStep {
+interface SessionStep {
   type: StepType
   label: string
+  panel: string
   description: string
   isModified: (r: number, c: number) => boolean
 }
 
-const STEPS: EncryptionStep[] = [
-  { type: "INIT", label: "INITIALIZATION", description: "Loading the unique Block Counter (Nonce). Each block gets a unique counter value.", isModified: () => false },
-  { type: "WHITENING", label: "INITIAL WHITENING", description: "XOR (State ^ RoundKey[0]). The state is whitened before entering the main loop.", isModified: () => true },
-  { type: "ROUND_KEY", label: "ROUND KEY ADDITION", description: "XOR (State ^ RoundKey[r]). Injecting fresh key material at the start of the round.", isModified: () => true },
-  { type: "SUBCELL", label: "SUBCELL (ARX)", description: "Nonlinear Layer. 4 rounds of Add-Rotate-XOR per cell using Golden Ratio constants to destroy linearity.", isModified: () => true },
-  { type: "SHIFT_ROWS", label: "SHIFT ROWS", description: "Permutation. Rows are rotated left by variable offsets derived from the Round Key (key-dependent).", isModified: () => true },
-  { type: "MIX_COLUMNS", label: "MIX COLUMNS", description: "MDS Diffusion. Columns are multiplied by a strictly invertible Cauchy matrix, guaranteeing an optimal branch number and perfect avalanche characteristics.", isModified: () => true },
-  { type: "KEYSTREAM_READY", label: "KEYSTREAM GENERATED", description: "The 16 rounds are complete. This pseudorandom block is the 'Keystream'.", isModified: () => false },
-  { type: "FINAL_XOR", label: "XOR WITH PLAINTEXT", description: "The Keystream is XORed with your data (DEADBEEF...) to produce the final Ciphertext (CTR Mode).", isModified: () => true }
+const STEPS: SessionStep[] = [
+  {
+    type: "HANDSHAKE",
+    label: "HANDSHAKE",
+    panel: "PEER_PUBLIC_KEYS",
+    description: "Client and server trade ephemeral P-521 and ML-KEM-768 public keys. The server signs the whole transcript with its long-term identity key, and you confirm its fingerprint once: trust on first use.",
+    isModified: () => false,
+  },
+  {
+    type: "DERIVE",
+    label: "SESSION KEYS",
+    panel: "DERIVED_KEY_MATERIAL",
+    description: "The classical shared secret and the post-quantum encapsulated secret go into HKDF-SHA256 together. Breaking the session means breaking both, since one alone is not enough.",
+    isModified: () => true,
+  },
+  {
+    type: "AUTH",
+    label: "AUTHENTICATION",
+    panel: "DERIVED_KEY_MATERIAL",
+    description: "The server issues a challenge; your password is hashed with Argon2 and never leaves the machine in any recoverable form. Bans and roles are resolved here, before a single message flows.",
+    isModified: (r) => r === 0,
+  },
+  {
+    type: "COUNTER",
+    label: "BLOCK COUNTER",
+    panel: "COUNTER_BLOCK_IN",
+    description: "You press Enter. The message is split into blocks and each one is handed a unique counter value. WHY2 runs in CTR mode, so blocks encrypt independently and in parallel.",
+    isModified: () => false,
+  },
+  {
+    type: "ROUNDS",
+    label: "REX ROUNDS",
+    panel: "KEYSTREAM_STATE",
+    description: "The counter block runs through the cipher: round-key addition, an ARX nonlinear layer, key-dependent row shifts, and MDS column mixing, repeated until every input bit has touched every output bit.",
+    isModified: () => true,
+  },
+  {
+    type: "KEYSTREAM",
+    label: "KEYSTREAM READY",
+    panel: "KEYSTREAM_OUT",
+    description: "What comes out is a pseudorandom block bound to this session's key and this block's counter. It is never reused: no two blocks in a session share a keystream.",
+    isModified: () => false,
+  },
+  {
+    type: "XOR",
+    label: "XOR WITH MESSAGE",
+    panel: "CIPHERTEXT",
+    description: "The keystream is XORed with your text. The same operation covers voice packets, screen frames and file chunks: one session key protects every side channel the client opens.",
+    isModified: () => true,
+  },
+  {
+    type: "SEAL",
+    label: "AUTHENTICATE & SEND",
+    panel: "SEALED_PACKET",
+    description: "An HMAC-SHA256 tag and a sequence number are attached before the packet leaves. Tampering, replays and reordering are all rejected on arrival. The server holds the other end of this session, decrypts the packet, and re-encrypts it for whoever it is routed to.",
+    isModified: () => false,
+  },
+  {
+    type: "REKEY",
+    label: "REKEY",
+    panel: "NEW_KEY_MATERIAL",
+    description: "Every ten minutes the whole handshake runs again and the old session keys are thrown away. A rekey that fails to verify does not fall back; the session simply ends.",
+    isModified: () => true,
+  },
 ]
 
 const getValue = (val: string): number => {
@@ -36,49 +92,55 @@ const transformValue = (val: string, diff: number): string => {
   return res.toString(16).toUpperCase().padStart(2, '0');
 }
 
-const COUNTER_GRID = [
-  ["00", "00", "00", "01"],
+const PUBLIC_KEY_GRID = [
+  ["04", "1B", "9C", "5E"],
   ["A1", "B2", "C3", "D4"],
-  ["10", "20", "30", "40"],
+  ["7F", "20", "30", "40"],
   ["99", "88", "77", "66"]
 ]
 
+const COUNTER_GRID = [
+  ["00", "00", "00", "01"],
+  ["00", "00", "00", "00"],
+  ["A1", "B2", "C3", "D4"],
+  ["00", "00", "00", "07"]
+]
+
 const USER_PLAINTEXT = [
-  ["D", "E", "A", "D"],
-  ["B", "E", "E", "F"],
-  ["C", "A", "F", "E"],
-  ["B", "A", "B", "E"]
+  ["P", "r", "i", "v"],
+  ["a", "c", "y", " "],
+  ["i", "s", " ", "a"],
+  [" ", "r", "i", "t"]
 ]
 
 export function EncryptionDemo() {
-  const [history, setHistory] = useState<string[][][]>([COUNTER_GRID])
+  const [history, setHistory] = useState<string[][][]>([PUBLIC_KEY_GRID])
   const [stepIndex, setStepIndex] = useState(0)
   const currentGrid = history[stepIndex]
 
   const calculateNextGrid = useCallback((currentStep: StepType, inputGrid: string[][], seed: number) => {
     const newGrid = inputGrid.map(row => [...row])
     switch (currentStep) {
-      case "INIT": return COUNTER_GRID
-      case "WHITENING":
-        for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) newGrid[r][c] = transformValue(newGrid[r][c], (seed * 5) + 0xAA)
+      case "HANDSHAKE": return PUBLIC_KEY_GRID
+      case "COUNTER": return COUNTER_GRID
+      case "DERIVE":
+        for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) newGrid[r][c] = transformValue(newGrid[r][c], (seed * 31) + 0xAA + (r * c))
         break;
-      case "ROUND_KEY":
+      case "AUTH":
+        for (let c = 0; c < 4; c++) newGrid[0][c] = transformValue(newGrid[0][c], 0x5C + c)
+        break;
+      case "ROUNDS":
+        // Round key, ARX, shift rows and column mixing, collapsed into one visible transition
         for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) newGrid[r][c] = transformValue(newGrid[r][c], (seed * 11) + r + c)
-        break;
-      case "SUBCELL":
         for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) newGrid[r][c] = transformValue(newGrid[r][c], getValue(newGrid[r][c]) + 7 + r)
-        break
-      case "SHIFT_ROWS":
-        newGrid[0] = [...inputGrid[0]]
-        newGrid[1] = [...inputGrid[1].slice(1), ...inputGrid[1].slice(0, 1)]
-        newGrid[2] = [...inputGrid[2].slice(2), ...inputGrid[2].slice(0, 2)]
-        newGrid[3] = [...inputGrid[3].slice(3), ...inputGrid[3].slice(0, 3)]
-        break
-      case "MIX_COLUMNS":
-        for (let c = 0; c < 4; c++) { const nc = (c + 1) % 4; for (let r = 0; r < 4; r++) newGrid[r][c] = transformValue(newGrid[r][c], getValue(inputGrid[r][nc])) }
-        break
-      case "FINAL_XOR":
+        for (let r = 1; r < 4; r++) newGrid[r] = [...newGrid[r].slice(r), ...newGrid[r].slice(0, r)]
+        for (let c = 0; c < 4; c++) { const nc = (c + 1) % 4; for (let r = 0; r < 4; r++) newGrid[r][c] = transformValue(newGrid[r][c], getValue(newGrid[r][nc])) }
+        break;
+      case "XOR":
         for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) newGrid[r][c] = transformValue(newGrid[r][c], getValue(USER_PLAINTEXT[r][c]));
+        break;
+      case "REKEY":
+        for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) newGrid[r][c] = transformValue(newGrid[r][c], (seed * 47) + 0x3D + r)
         break;
     }
     return newGrid
@@ -95,30 +157,31 @@ export function EncryptionDemo() {
     }
   }
   const handlePrev = () => { if (stepIndex > 0) setStepIndex(prev => prev - 1) }
-  const handleReset = () => { setStepIndex(0); setHistory([COUNTER_GRID]) }
+  const handleReset = () => { setStepIndex(0); setHistory([PUBLIC_KEY_GRID]) }
 
   const currentStepData = STEPS[stepIndex]
+  const isSealed = currentStepData.type === "SEAL" || currentStepData.type === "REKEY"
   const isFinal = stepIndex === STEPS.length - 1
 
   return (
     <section className="py-10 lg:py-24 px-4 bg-card/50 border-y border-border">
       <div className="container mx-auto max-w-6xl">
-        {/* Header row — title left, info right */}
+        {/* Header row: title left, info right */}
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6 lg:gap-6 lg:mb-12">
           <div>
-            <p className="font-mono text-xs tracking-widest uppercase text-primary mb-3">Pipeline</p>
-            <h2 className="font-mono text-3xl md:text-4xl font-bold">Inside the REX Core</h2>
+            <p className="font-mono text-xs tracking-widest uppercase text-primary mb-3">Security</p>
+            <h2 className="font-mono text-3xl md:text-4xl font-bold">What happens when you press Enter</h2>
           </div>
           <div className="flex items-start gap-2 bg-background border border-border rounded-lg p-3 max-w-md">
             <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
             <p className="text-xs text-muted-foreground font-mono">
-              <strong className="text-primary">Simplified demo</strong> — 4×4 byte matrix.
-              Actual REX uses 64-bit arithmetic, 8×8 state, 16 rounds.
+              <strong className="text-primary">Simplified demo</strong>, 4×4 byte matrix.
+              The real cipher uses 64-bit arithmetic over configurable grids.
             </p>
           </div>
         </div>
 
-        {/* Main content — 3-column layout */}
+        {/* Main content: 3-column layout */}
         <div className="grid lg:grid-cols-[280px_1fr_1fr] gap-8 items-start">
 
           {/* Column 1: Step list / timeline */}
@@ -148,10 +211,10 @@ export function EncryptionDemo() {
             <div className="flex justify-between items-center mb-5 pb-3 border-b border-border/50">
               <div className="font-mono text-xs text-muted-foreground flex items-center gap-2">
                 <Cpu className="w-4 h-4 text-primary" />
-                {isFinal ? "CIPHERTEXT_OUT" : stepIndex === 0 ? "COUNTER_BLOCK_IN" : "KEYSTREAM_STATE"}
+                {currentStepData.panel}
               </div>
-              {isFinal ? (
-                <div className="flex items-center gap-1 text-xs font-mono text-green-500 font-bold">
+              {isSealed ? (
+                <div className="flex items-center gap-1 text-xs font-mono text-foreground font-bold">
                   <ShieldCheck className="w-4 h-4" /> SECURE
                 </div>
               ) : (
@@ -169,8 +232,8 @@ export function EncryptionDemo() {
                       className={cn(
                         "aspect-square flex items-center justify-center rounded border font-mono text-lg transition-all duration-200",
                         "bg-card border-border/50 text-muted-foreground",
-                        isModified && !isFinal && "border-primary/50 text-primary bg-primary/5",
-                        isFinal && "border-green-500/30 text-green-500 bg-green-500/5 font-bold",
+                        isModified && !isSealed && "border-primary/50 text-primary bg-primary/5",
+                        isSealed && "border-foreground/40 text-foreground bg-foreground/[0.06] font-bold",
                         stepIndex === 0 && "text-foreground font-medium"
                       )}
                     >
@@ -199,7 +262,7 @@ export function EncryptionDemo() {
               <div className="flex items-center gap-3">
                 <span className={cn(
                   "flex h-7 px-2.5 items-center justify-center rounded text-xs font-mono font-bold border",
-                  isFinal ? "bg-green-500/10 text-green-500 border-green-500/20" : "bg-primary/10 text-primary border-primary/20"
+                  isSealed ? "bg-foreground/10 text-foreground border-foreground/25" : "bg-primary/10 text-primary border-primary/20"
                 )}>
                   {stepIndex === 0 ? "START" : isFinal ? "DONE" : `${stepIndex}/${STEPS.length - 1}`}
                 </span>
@@ -213,10 +276,10 @@ export function EncryptionDemo() {
                 {currentStepData.description}
               </p>
 
-              {currentStepData.type === "FINAL_XOR" && (
+              {currentStepData.type === "XOR" && (
                 <div className="p-3 bg-background rounded border border-border text-sm font-mono text-muted-foreground flex items-center gap-2">
                   <ArrowDownUp className="w-4 h-4 text-primary shrink-0" />
-                  Keystream ⊕ &quot;DEADBEEF CAFEBABE&quot;
+                  Keystream ⊕ &quot;Privacy is a right&quot;
                 </div>
               )}
             </div>

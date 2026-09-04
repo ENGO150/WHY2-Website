@@ -19,10 +19,11 @@ import {
 } from "@/components/ui/alert-dialog"
 
 const NAV_LINKS = [
-  { label: "How It Works", href: "#demo" },
+  { label: "The Client", href: "#client" },
   { label: "Features", href: "#features" },
-  { label: "Quick Start", href: "#code" },
-  { label: "Chat", href: "#poc" },
+  { label: "Security", href: "#security" },
+  { label: "Quick Start", href: "#start" },
+  { label: "The Cipher", href: "#cipher" },
 ]
 
 export function Navbar() {

@@ -1,9 +1,10 @@
 import { Navbar } from "@/components/navbar"
 import { HeroSection } from "@/components/hero-section"
-import { EncryptionDemo } from "@/components/encryption-demo"
+import { ChatShowcase } from "@/components/chat-showcase"
 import { FeaturesGrid } from "@/components/features-grid"
+import { EncryptionDemo } from "@/components/encryption-demo"
 import { CodeShowcase } from "@/components/code-showcase"
-import { ProofOfConcept } from "@/components/proof-of-concept"
+import { CipherSection } from "@/components/cipher-section"
 import { DisclaimerSection } from "@/components/disclaimer-section"
 import { Footer } from "@/components/footer"
 
@@ -14,20 +15,24 @@ export default function Home() {
 
       <HeroSection />
 
-      <div id="demo" className="scroll-mt-20">
-        <EncryptionDemo />
+      <div id="client" className="scroll-mt-20">
+        <ChatShowcase />
       </div>
 
       <div id="features" className="scroll-mt-20">
         <FeaturesGrid />
       </div>
 
-      <div id="code" className="scroll-mt-20">
+      <div id="security" className="scroll-mt-20">
+        <EncryptionDemo />
+      </div>
+
+      <div id="start" className="scroll-mt-20">
         <CodeShowcase />
       </div>
 
-      <div id="poc" className="scroll-mt-20">
-        <ProofOfConcept />
+      <div id="cipher" className="scroll-mt-20">
+        <CipherSection />
       </div>
 
       <DisclaimerSection />

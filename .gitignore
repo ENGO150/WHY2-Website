@@ -15,3 +15,6 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 *.pem
+
+# typescript incremental build info
+tsconfig.tsbuildinfo
