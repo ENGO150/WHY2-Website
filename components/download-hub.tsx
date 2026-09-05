@@ -3,7 +3,7 @@
 import type React from "react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { AppWindow, ArrowDown, Check, Command, Container, Copy, Download, Package, Smartphone, Terminal } from "lucide-react"
+import { AppWindow, ArrowDown, Check, ChevronDown, Command, Container, Copy, Download, Package, Smartphone, Terminal } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const BASE = "https://dl.satan.red"
@@ -23,6 +23,7 @@ const COMPOSE = `services:
 type Os = "linux" | "macos" | "windows" | "android"
 type Target = Os | "docker"
 type Channel = "stable" | "release" | "development"
+type Client = "desktop" | "terminal"
 
 type Artifact = {
   file: string
@@ -89,6 +90,35 @@ function detectOs(): Os {
   return "linux"
 }
 
+// The badge is the affordance: it names the trade-off, and clicking it explains the cost
+function StanceBadge({
+  label,
+  tone,
+  open,
+  onToggle,
+}: {
+  label: string
+  tone: "muted" | "primary"
+  open: boolean
+  onToggle: () => void
+}) {
+  return (
+    <button
+      onClick={onToggle}
+      aria-expanded={open}
+      className={cn(
+        "font-mono text-[10px] uppercase tracking-widest px-2 py-1 rounded border transition-colors duration-200 cursor-pointer flex items-center gap-1.5",
+        tone === "primary"
+          ? "border-primary/40 bg-primary/10 text-primary hover:border-primary/60"
+          : "border-border bg-secondary text-muted-foreground hover:border-primary/25 hover:text-foreground"
+      )}
+    >
+      {label}
+      <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", open && "rotate-180")} />
+    </button>
+  )
+}
+
 function ArtifactRow({ artifact }: { artifact: Artifact }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-4 border-b border-border/50 last:border-b-0">
@@ -123,6 +153,8 @@ export function DownloadHub() {
   const [detectedOs, setDetectedOs] = useState<Os | null>(null)
   const [channel, setChannel] = useState<Channel>("release")
   const [copied, setCopied] = useState(false)
+  // Which client's privacy stance is expanded, opened by clicking its badge
+  const [stance, setStance] = useState<Client | null>(null)
 
   // The navbar performs the same offset-aware scroll, so the heading clears the fixed header
   const scrollToPackages = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -268,15 +300,28 @@ export function DownloadHub() {
         {!isDocker && (
         <div className={cn("grid gap-6 mb-16", terminal.length > 0 && "lg:grid-cols-2")}>
           <div className="bg-card border border-border rounded-lg p-6">
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex flex-wrap items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded bg-secondary border border-border flex items-center justify-center">
                 <AppWindow className="w-5 h-5 text-primary" />
               </div>
               <h2 className="font-mono text-lg font-semibold">Desktop app</h2>
+              <StanceBadge
+                label="Comfort first"
+                tone="muted"
+                open={stance === "desktop"}
+                onToggle={() => setStance(stance === "desktop" ? null : "desktop")}
+              />
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed mb-4">
               The graphical client, with voice, screen sharing and file transfer in the window.
             </p>
+            {stance === "desktop" && (
+              <p className="text-xs text-muted-foreground/70 leading-relaxed mb-4 pl-3 border-l border-border">
+                Same protocol and same encryption on the wire, with the edges softened. Your server list
+                lives in a file only your account can read, and it holds the passwords you asked it to
+                remember in the clear. Leave a password empty and it asks you at every connect instead.
+              </p>
+            )}
             <div>
               {desktop.map((artifact) => (
                 <ArtifactRow key={artifact.file} artifact={artifact} />
@@ -286,16 +331,29 @@ export function DownloadHub() {
 
           {terminal.length > 0 && (
             <div className="bg-card border border-border rounded-lg p-6">
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex flex-wrap items-center gap-3 mb-2">
                 <div className="w-10 h-10 rounded bg-secondary border border-border flex items-center justify-center">
                   <Terminal className="w-5 h-5 text-primary" />
                 </div>
                 <h2 className="font-mono text-lg font-semibold">Terminal client</h2>
+                <StanceBadge
+                  label="Privacy first"
+                  tone="primary"
+                  open={stance === "terminal"}
+                  onToggle={() => setStance(stance === "terminal" ? null : "terminal")}
+                />
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                 The keyboard-driven TUI, plus the server binary if you want to host. Two single files
                 with nothing to install.
               </p>
+              {stance === "terminal" && (
+                <p className="text-xs text-muted-foreground/70 leading-relaxed mb-4 pl-3 border-l border-primary/30">
+                  Nothing is remembered for you: no stored credentials, no convenience cache. It asks for
+                  the password each time and leaves nothing behind on the machine. This is the one to run
+                  when privacy has to be absolute.
+                </p>
+              )}
 
               <div>
                 {terminal.map((artifact) => (
