@@ -23,7 +23,7 @@ export function Footer() {
                 <li><Link href="/download">downloads</Link></li>
                 <li><a href="https://crates.io/crates/why2-chat" target="_blank" rel="noopener noreferrer">crates.io</a></li>
                 <li><a href="https://aur.archlinux.org/packages/why2" target="_blank" rel="noopener noreferrer">aur</a></li>
-                <li><a href="https://docs.rs/why2/latest/why2" target="_blank" rel="noopener noreferrer">docs.rs</a></li>
+                <li><a href="https://cgit.gentoo.org/repo/proj/guru.git/tree/net-im/why2" target="_blank" rel="noopener noreferrer">guru</a></li>
               </ul>
             </div>
             <div>
@@ -32,6 +32,7 @@ export function Footer() {
                 <li><a href="https://git.satan.red/ENGO150/WHY2" target="_blank" rel="noopener noreferrer">git.satan.red</a></li>
                 <li><a href="https://github.com/ENGO150/WHY2" target="_blank" rel="noopener noreferrer">github mirror</a></li>
                 <li><a href="https://git.satan.red/ENGO150/WHY2/-/blob/stable/SECURITY" target="_blank" rel="noopener noreferrer">security policy</a></li>
+                <li><a href="https://docs.rs/why2/latest/why2" target="_blank" rel="noopener noreferrer">docs.rs</a></li>
               </ul>
             </div>
             <div>
